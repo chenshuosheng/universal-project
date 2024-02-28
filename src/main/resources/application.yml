@@ -16,3 +16,7 @@ cors:
   #allowedHeaders:                         #允许的请求头
   allowedMethods: '*'                      #允许的 HTTP 方法
   maxAge: 3600                             #预检请求的有效期
+
+
+myConfig:
+  swagger-ui-open: true
