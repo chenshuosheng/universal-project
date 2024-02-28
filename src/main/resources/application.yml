@@ -7,3 +7,12 @@ spring:
     url: jdbc:mysql://localhost:3306/universal_project
     username: root
     password: 123456
+
+cors:
+  addMapping: '/**'                        #允许跨域请求的路径模式
+  allowedOriginPattern: '*'                #类似于 allowedOrigins，但是使用通配符模式进行匹配，可以更灵活地设置允许访问资源的源
+  #allowedOrigins:                         #允许访问资源的源
+  allowCredentials: true                   #是否允许发送认证信息（如 cookies、HTTP 认证信息）到服务器
+  #allowedHeaders:                         #允许的请求头
+  allowedMethods: '*'                      #允许的 HTTP 方法
+  maxAge: 3600                             #预检请求的有效期
