@@ -82,6 +82,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
+
+        <!--openfeign 实现服务之间的通信或者调用远程接口-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-core</artifactId>
+            <version>10.12</version>
+        </dependency>
     </dependencies>
 
     <build>
