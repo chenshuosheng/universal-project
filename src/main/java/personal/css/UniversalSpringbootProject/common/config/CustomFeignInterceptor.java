@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
     * 这样做可以确保在服务间通信时，目标服务可以获取到发送请求的用户标识，从而进行相应的权限验证或其他操作。
     * 通过这种方式，我们可以实现统一的请求头信息设置，而不需要在每次 Feign 请求中手动添加相同的头部信息
 */
+/**
+ * @Description: 用 Feign 进行服务间通信时，自动地向请求中添加头部信息
+ * @Author: CSS
+ * @Date: 2024/2/28 23:44
+ */
 @Component
 public class CustomFeignInterceptor implements RequestInterceptor {
 
