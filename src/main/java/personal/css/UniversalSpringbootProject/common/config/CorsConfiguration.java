@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @Description: TODO
+ * @Description: 全局跨域配置
  * @Author: CSS
  * @Date: 2024/2/28 17:44
  */
