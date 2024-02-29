@@ -96,11 +96,19 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
-        <!--<dependency>
+        <!--用于在Spring Boot应用程序中实现多数据源的管理。通过使用这个库，可以动态地切换应用程序所使用的数据源-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+        <!--JSON-->
+        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.10</version>
-        </dependency>-->
+        </dependency>
     </dependencies>
 
     <build>

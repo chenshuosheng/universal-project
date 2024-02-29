@@ -3,10 +3,13 @@ server:
 
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/universal_project
-    username: root
-    password: 123456
+    dynamic:
+      primary: universal_project
+      datasource:
+        universal_project:
+          url: jdbc:mysql://localhost:3306/universal_project
+          username: root
+          password: 123456
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss    #指定使用Jackson进行日期序列化和反序列化的格式和时区
     time-zone: GMT+8

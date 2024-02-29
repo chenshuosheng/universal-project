@@ -31,12 +31,18 @@ public class MyAspect {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    //定义切点
-    @Pointcut("execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*(..)) || execution(public * personal.css.UniversalSpringbootProject.common.controller.*.*(..))")
-    private void all(){}
+    //定义切点包含基础控制层接口、所有具体控制层（不包含公共接口）接口
+    @Pointcut("" +
+                "(execution(public * personal.css.UniversalSpringbootProject.common.controller.*.*(..)) " +
+                    "|| " +
+                "execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*(..))) " +
+                "&& " +
+            "!execution(public * personal.css.UniversalSpringbootProject.*.controller.*.*Public(..))")
+    private void baseOrOtherNotPublicController(){}
+
 
     //引用切点
-    @Around("all()")
+    @Around(value = "baseOrOtherNotPublicController()")
     private Object Handle(ProceedingJoinPoint point) throws Throwable {
 
         Long userId = (Long)httpServletRequest.getAttribute(USER_ID);
