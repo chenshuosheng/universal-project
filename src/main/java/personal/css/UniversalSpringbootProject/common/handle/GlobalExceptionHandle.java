@@ -1,8 +1,9 @@
-package personal.css.UniversalSpringbootProject.common.exception;
+package personal.css.UniversalSpringbootProject.common.handle;
 
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,6 +36,14 @@ public class GlobalExceptionHandle {
         exception.printStackTrace();
         String message = "数据库操作异常，请联系管理员处理";
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //捕获到JSON数据解析异常
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ResultVo<?>> CaughtHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException exception){
+        exception.printStackTrace();
+        String message = "解析JSON数据时出现错误，请检查数据格式是否正确";
+        return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
     }
 
     //捕获到运行时异常
