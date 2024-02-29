@@ -5,12 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+@ServletComponentScan  //启用Servlet组件扫描，以便识别和注册过滤器
 @EnableSwaggerBootstrapUI
 @SpringBootApplication
 public class UniversalSpringbootProjectApplication {
