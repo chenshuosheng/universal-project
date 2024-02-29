@@ -1,12 +1,11 @@
 package personal.css.UniversalSpringbootProject.common.service.impl;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
+import org.springframework.jdbc.BadSqlGrammarException;
 import personal.css.UniversalSpringbootProject.common.pojo.BaseEntity;
 import personal.css.UniversalSpringbootProject.common.service.MyBaseService;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
@@ -23,7 +22,6 @@ import java.util.Map;
  * @Author: CSS
  * @Date: 2024/2/29 8:38
  */
-@Service
 public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseEntity> extends ServiceImpl<M, T> implements MyBaseService<T> {
 
     private final String TABLE_NAME = this.entityClass.getAnnotation(TableName.class).value();
@@ -42,7 +40,7 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
     }
 
     @Override
-    public ListResult<T> list(String filter, String order) {
+    public ListResult<T> list(String filter, String order) throws BadSqlGrammarException {
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
         //使用封装类的方法，将filter、order条件填入QueryWrapper<T>的对象queryWrapper
         List<T> list = super.list(queryWrapper);
@@ -50,7 +48,7 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
     }
 
     @Override
-    public ListResult<T> pageList(String filter, Integer pageNum, Integer pageSize, String order) {
+    public ListResult<T> pageList(String filter, Integer pageNum, Integer pageSize, String order) throws BadSqlGrammarException{
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
         //使用封装类的方法，将filter、order条件填入QueryWrapper<T>的对象queryWrapper
         Page<T> page = this.page(new Page<>(pageNum, pageSize), queryWrapper);
@@ -62,9 +60,9 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
         model.setCreatorUserId(userId);
         model.setCreationTime(new Date());
         model.setIsDeleted(false);
+        //插入会自动生成id
         this.save(model);
-        //这里会包含乐观锁版本信息？
-        return model;
+        return this.getById(model.getId());
     }
 
     @Override
@@ -74,9 +72,7 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
             throw new RuntimeException("当前数据已被修改，请获取最新数据后重新进行修改" );
         }
         //更新成功，返回最新数据
-        LambdaQueryWrapper<T> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(T::getId, model.getId());
-        return this.getOne(wrapper);
+        return this.getById(model.getId());
     }
 
 
@@ -93,10 +89,15 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
     @Override
     public SuccessCount delete(Long userId, String id) {
         //查询记录
-        LambdaQueryWrapper<T> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(T::getId, id);
-        T model = this.getOne(wrapper);
-        //为什么不直接使用 T model = this.getById(id);
+        T model = this.getById(id);
+        //不可以使用下列方法: 泛型问题
+        //异常：nested exception is org.apache.ibatis.builder.BuilderException:
+        // Error evaluating expression 'ew.sqlSegment != null and ew.sqlSegment != '' and ew.nonEmptyOfNormal'.
+        // Cause: org.apache.ibatis.ognl.OgnlException: sqlSegment [com.baomidou.mybatisplus.core.exceptions.MybatisPlusException:
+        // can not find lambda cache for this entity [personal.css.UniversalSpringbootProject.common.pojo.BaseEntity]]
+        //LambdaQueryWrapper<T> wrapper = new LambdaQueryWrapper<>();
+        //wrapper.eq(T::getId, id);
+        //T model = this.getOne(wrapper);
 
         //如果得到记录为null，说明不能删除
         if (model == null) {

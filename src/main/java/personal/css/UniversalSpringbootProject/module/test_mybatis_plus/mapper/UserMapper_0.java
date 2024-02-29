@@ -10,5 +10,5 @@ import personal.css.UniversalSpringbootProject.module.test_mybatis_plus.pojo.Use
  * @Date: 2024/2/28 16:03
  */
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface UserMapper_0 extends BaseMapper<User> {
 }

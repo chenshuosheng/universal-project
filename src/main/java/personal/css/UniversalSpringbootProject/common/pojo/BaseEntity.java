@@ -65,8 +65,20 @@ public class BaseEntity implements Serializable {
     @TableLogic
     private Boolean isDeleted;
 
+    //在更新记录时，如果lockVersion没有值，则会被忽略，但是系统若要求必须传，则有没有设置都没用影响
+    //在插入记录时，抹除lockVersion的数据，默认为0
+    //在查询记录时，只有当字段不为 null 且不为空，才会包含在 WHERE 语句中，否则会被忽略。
     @ApiModelProperty(value = "乐观锁版本号")
     @TableField(value = "lock_version", updateStrategy = FieldStrategy.IGNORED, insertStrategy = FieldStrategy.NEVER, whereStrategy = FieldStrategy.NOT_EMPTY)
     @Version
     private Integer lockVersion;
+
+    //说明
+    /*
+        在 MyBatis-Plus 中，insertStrategy 是用于指定在插入操作中对字段值的处理策略的枚举类型。
+        下面是它们的区别：
+            NEVER：表示不管字段是否有值，插入操作都不会将该字段包含在 INSERT 语句中，即使该字段有值也会被忽略。
+            IGNORED：表示在插入操作中，如果字段有值则会包含在 INSERT 语句中，如果字段没有值则会被忽略，相当于在 SQL 语句中使用了 IF NOT NULL 的条件判断。
+            NOT_EMPTY：表示在插入操作中，只有当字段不为 null 且不为空（例如字符串不为 ""）时才会包含在 INSERT 语句中，否则会被忽略。
+     */
 }
