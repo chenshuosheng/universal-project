@@ -1,10 +1,13 @@
 package personal.css.UniversalSpringbootProject.common.handle;
 
+import cn.hutool.json.JSONArray;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
@@ -46,8 +49,27 @@ public class GlobalExceptionHandle {
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
     }
 
+    //捕获到参数异常
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResultVo<?>> CaughtMethodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException exception){
+        exception.printStackTrace();
+        JSONArray array = new JSONArray();
+        for (ObjectError error : exception.getAllErrors()) {
+            array.add(error.getDefaultMessage());
+        }
+        String message = array.toString();
+        return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
+    }
+
     //捕获到运行时异常
     @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ResultVo<?>> handleRuntimeException(HttpServletRequest request, RuntimeException e){
+        e.printStackTrace();
+        return new ResponseEntity<>(new ResultVo<>(false, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //捕获到Exception异常
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultVo<?>> handleException(Exception e){
         e.printStackTrace();
         return new ResponseEntity<>(new ResultVo<>(false, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -7,6 +7,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import personal.css.UniversalSpringbootProject.common.pojo.BaseEntity;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 /**
  * @Description: 用户信息实体类
  * @Author: CSS
@@ -21,10 +25,13 @@ public class User extends BaseEntity {
     @TableField(value = "name")
     private String name;
 
+    @Min(value = 10, message = "年龄不能小于10！")
+    @Max(value = 50, message = "年龄不能大于50！")
     @ApiModelProperty(value = "年龄")
     @TableField(value = "age")
     private Integer age;
 
+    @Pattern(regexp = "^\\w+([-+.]\\w+)@\\w+([-.]\\w+).\\w+([-.]\\w+)*$", message = "邮箱格式不符！")
     @ApiModelProperty(value = "邮箱")
     @TableField(value = "email")
     private String email;
