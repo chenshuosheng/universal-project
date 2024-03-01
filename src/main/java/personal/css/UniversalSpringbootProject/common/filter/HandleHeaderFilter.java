@@ -30,7 +30,7 @@ public class HandleHeaderFilter implements Filter {
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        String tenantId = httpServletRequest.getHeader(ABP_TENANTID);
+        String tenantId = httpServletRequest.getHeader(ABP_TENANT_ID);
         String token = httpServletRequest.getHeader(AUTHORIZATION);
         String requestURI = httpServletRequest.getRequestURI();
 

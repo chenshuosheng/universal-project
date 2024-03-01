@@ -65,7 +65,7 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResultVo<?>> handleRuntimeException(HttpServletRequest request, RuntimeException e){
         e.printStackTrace();
-        return new ResponseEntity<>(new ResultVo<>(false, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ResultVo<>(false, e.getCause().getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     //捕获到Exception异常

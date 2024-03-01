@@ -1,6 +1,8 @@
 package personal.css.UniversalSpringbootProject.common.controller;
 
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,10 @@ import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
 
+import javax.validation.constraints.Pattern;
+import java.sql.SQLException;
+import java.text.ParseException;
+
 
 /**
  * @Description: 自定义基础控制层抽象类
@@ -21,6 +27,7 @@ import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
  * @Date: 2024/2/29 8:38
  */
 @RestController
+@Validated
 public abstract class MyBaseController<S extends MyBaseService<T>, T extends BaseEntity> {
 
     //不能用Resource
@@ -104,5 +111,96 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
     @GetMapping("/getPaged")
     public ResponseEntity<ResultVo<ListResult<T>>> getPaged(@ApiParam(hidden = true) Long userId, String filter, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize, String order) {
         return new ResponseEntity<>(new ResultVo<>(true, null, this.service.pageList(filter, pageNum, pageSize, order)), HttpStatus.OK);
+    }
+
+
+    /**
+     * 获取建表sql语句
+     *
+     * @return
+     */
+    @ApiOperation(value = "获取建表sql语句")
+    @GetMapping("/getCreateTableSql")
+    public ResponseEntity<ResultVo<String>> getCreateTableSql(@ApiParam(hidden = true) Long userId) throws SQLException {
+        return new ResponseEntity<>(new ResultVo<>(true, null, this.service.getCreateTableSql()), HttpStatus.OK);
+    }
+
+
+    @ApiOperation("根据sql查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sql", value = "表名请使用TABLE_NAME进行代替")
+    })
+    @GetMapping("/queryBySql")
+    public ResponseEntity<ResultVo<?>> queryBySql(@ApiParam(hidden = true) Long userId, @RequestParam @Pattern(regexp = "^.*\\s+TABLE_NAME\\s+.*$", message = "传入sql未包含TABLE_NAME！") String sql) throws SQLException {
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.queryBySql(sql)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation("根据sql插入")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sql", value = "表名请使用TABLE_NAME进行代替")
+    })
+    @GetMapping("/insertBySql")
+    public ResponseEntity<ResultVo<?>> insertBySql(@ApiParam(hidden = true) Long userId, @RequestParam @Pattern(regexp = "^.*\\s+TABLE_NAME\\s+.*$", message = "传入sql未包含TABLE_NAME！") String sql) throws SQLException {
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.insertBySql(sql)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation("根据sql更新")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sql", value = "表名请使用TABLE_NAME进行代替")
+    })
+    @GetMapping("/updateBySql")
+    public ResponseEntity<ResultVo<?>> updateBySql(@ApiParam(hidden = true) Long userId, @RequestParam @Pattern(regexp = "^.*\\s+TABLE_NAME\\s+.*$", message = "传入sql未包含TABLE_NAME！") String sql) throws SQLException {
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.updateBySql(sql)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation("根据sql删除")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "sql", value = "表名请使用TABLE_NAME进行代替")
+    })
+    @GetMapping("/deleteBySql")
+    public ResponseEntity<ResultVo<?>> deleteBySql(@ApiParam(hidden = true) Long userId, @RequestParam @Pattern(regexp = "^.*\\s+TABLE_NAME\\s+.*$", message = "传入sql未包含TABLE_NAME！") String sql) throws SQLException {
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.deleteBySql(sql)), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "根据属性-值进行插入",notes = "根据属性字符串结合值字符串进行插入")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "properties", value = "属性名字符串，使用','隔开"),
+            @ApiImplicitParam(name = "values", value = "值字符串，使用','隔开")
+    })
+    @GetMapping("/insertByPVS")
+    public ResponseEntity<ResultVo<?>> insertByPVS(@ApiParam(hidden = true) Long userId, @RequestParam String properties, @RequestParam String values) throws SQLException, InstantiationException, IllegalAccessException {
+        //解析属性字符串
+        String[] ps = properties.split(",");
+
+        //解析值字符串
+        String[] vs = values.split(",");
+
+        if(ps.length != vs.length)
+            return new ResponseEntity<>(new ResultVo<>(false,"属性-值数量不匹配！",null), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.insertByPVS(ps,vs)), HttpStatus.OK);
+    }
+
+
+    @ApiOperation(value = "根据属性-值进行插入",notes = "根据属性字符串结合值字符串进行插入")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "properties", value = "属性名字符串，使用','隔开"),
+            @ApiImplicitParam(name = "values", value = "值字符串，使用','隔开")
+    })
+    @GetMapping("/insertByPVS2")
+    public ResponseEntity<ResultVo<?>> insertByPVS2(@ApiParam(hidden = true) Long userId, @RequestParam String properties, @RequestParam String values) throws SQLException, NoSuchFieldException, InstantiationException, IllegalAccessException, ParseException {
+        //解析属性字符串
+        String[] ps = properties.split(",");
+
+        //解析值字符串
+        String[] vs = values.split(",");
+
+        if(ps.length != vs.length)
+            return new ResponseEntity<>(new ResultVo<>(false,"属性-值数量不匹配！",null), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(new ResultVo<>(true,null,this.service.insertByPVS2(userId, ps,vs)), HttpStatus.OK);
     }
 }

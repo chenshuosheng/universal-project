@@ -20,7 +20,7 @@ import java.util.Map;
 @Data
 public class BaseEntity implements Serializable {
 
-    public static final Map<String, String> COLUMN_MAP = new HashMap<String, String>(18){{
+    public static final Map<String, String> COLUMN_MAP = new HashMap<String, String>(){{
         put("id", "id");
         put("creationTime", "creation_time");
         put("creatorUserId", "creator_user_id");
