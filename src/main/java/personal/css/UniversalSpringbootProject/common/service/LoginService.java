@@ -1,6 +1,7 @@
 package personal.css.UniversalSpringbootProject.common.service;
 
 import personal.css.UniversalSpringbootProject.common.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 /**
  * @Description: 账号管理相关业务服务层接口
@@ -11,7 +12,7 @@ public interface LoginService {
 
     Boolean isExist(String name);
 
-    Boolean register(String name, String ep);
+    User registerAndSaveInfo(Account account, User user);
 
     Account getOneByName(String name);
 }

@@ -6,11 +6,14 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import personal.css.UniversalSpringbootProject.common.pojo.Account;
 import personal.css.UniversalSpringbootProject.common.service.LoginService;
 import personal.css.UniversalSpringbootProject.common.utils.JWTUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
+import personal.css.UniversalSpringbootProject.common.vo.UserVo;
+import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -34,21 +37,30 @@ public class LoginController {
 
 
     @ApiOperation(value = "注册", notes = "使用唯一账户名+密码进行注册")
-    @GetMapping("/register")
-    public ResponseEntity<ResultVo<String>> registerPublic(@RequestParam String name, @RequestParam String password) {
+    @PostMapping("/register")
+    public ResponseEntity<ResultVo<String>> registerPublic(@Validated @RequestBody UserVo model) {
+        String name = model.getName();
         Boolean exist = loginService.isExist(name);
 
         if (exist)
             throw new RuntimeException("账号已存在！");
 
+        String password = model.getPassword();
+        Integer age = model.getAge();
+        String email = model.getEmail();
+
         //加密密码
         String ep = password;
 
-        //添加用户
-        if (loginService.register(name, ep))
-            return new ResponseEntity<>(new ResultVo(false, null, "注册成功！"), HttpStatus.OK);
+        //注册账号信息
+        Account account = new Account(null, name, ep);
 
-        return new ResponseEntity<>(new ResultVo(false, "注册失败！", null), HttpStatus.INTERNAL_SERVER_ERROR);
+        //保存用户信息
+        User user = new User();
+        user.setName(name).setAge(age).setEmail(email);
+
+        //注册账号并保存用户信息
+        return new ResponseEntity<>(new ResultVo(true, null, loginService.registerAndSaveInfo(account, user)), HttpStatus.OK);
     }
 
 
