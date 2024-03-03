@@ -42,7 +42,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
      */
     @ApiOperation(value = "新增")
     @PostMapping("/create")
-    public ResponseEntity<ResultVo<T>> insert(@ApiParam(hidden = true) Long userId, @Validated @RequestBody T model) {
+    public ResponseEntity<ResultVo<T>> insert(@ApiParam(hidden = true) Long userId, @RequestBody T model) {
         return new ResponseEntity<>(new ResultVo<>(true, null, this.service.insert(userId, model)), HttpStatus.OK);
     }
 
@@ -55,7 +55,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
      */
     @ApiOperation(value = "修改(可只传：id+修改字段+lockVersion))")
     @PutMapping("/update")
-    public ResponseEntity<ResultVo<T>> update(@ApiParam(hidden = true) Long userId, @Validated @RequestBody T model) {
+    public ResponseEntity<ResultVo<T>> update(@ApiParam(hidden = true) Long userId, @RequestBody T model) {
         //为配合业务层进行更新判断，在每一次更新数据时，必须传当前数据的乐观锁版本
         if (model.getLockVersion() == null) {
             throw new RuntimeException("lockVersion修改必传");

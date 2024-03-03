@@ -24,6 +24,14 @@ import java.sql.SQLException;
 @RestControllerAdvice
 public class GlobalExceptionHandle {
 
+/*    //捕获到令牌异常 用不到
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ResultVo<?>> CaughtJWTVerificationException(HttpServletRequest request, JWTVerificationException exception){
+        exception.printStackTrace();
+        String message = "令牌有误！身份信息异常！";
+        return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
+    }*/
+
     //捕获到查询条件异常
     @ExceptionHandler(BadSqlGrammarException.class)
     public ResponseEntity<ResultVo<?>> CaughtBadSqlGrammarException(HttpServletRequest request, BadSqlGrammarException exception){

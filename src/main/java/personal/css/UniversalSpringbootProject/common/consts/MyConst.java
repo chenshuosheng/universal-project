@@ -16,6 +16,9 @@ public interface MyConst {
     public static final String USER_ID = "UserId";
 
 
+    //密钥
+    public static final String SECRET = "universalSpringbootProject";
+
 
     //msql驱动
     public static final String DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
