@@ -9,4 +9,6 @@ import personal.css.UniversalSpringbootProject.module.user.pojo.User;
  * @Date: 2024/2/29 10:23
  */
 public interface UserService extends MyBaseService<User> {
+
+    User getByName(String name);
 }

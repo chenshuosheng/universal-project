@@ -2,6 +2,7 @@ package personal.css.UniversalSpringbootProject.common.handle;
 
 import cn.hutool.json.JSONArray;
 import org.mybatis.spring.MyBatisSystemException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -31,6 +32,16 @@ public class GlobalExceptionHandle {
         String message = "令牌有误！身份信息异常！";
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
     }*/
+
+
+    //捕获到数据库重复键异常
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ResultVo<?>> CaughtDuplicateKeyException(HttpServletRequest request, DuplicateKeyException exception){
+        exception.printStackTrace();
+        String message = exception.getMessage();
+        return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
+    }
+
 
     //捕获到查询条件异常
     @ExceptionHandler(BadSqlGrammarException.class)

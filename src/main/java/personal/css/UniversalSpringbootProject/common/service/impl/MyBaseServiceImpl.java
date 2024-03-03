@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import personal.css.UniversalSpringbootProject.common.pojo.BaseEntity;
 import personal.css.UniversalSpringbootProject.common.service.MyBaseService;
@@ -12,6 +13,8 @@ import personal.css.UniversalSpringbootProject.common.utils.sql.ExecuteSQL;
 import personal.css.UniversalSpringbootProject.common.utils.sql.SqlValidateUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
+import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -59,11 +62,16 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
 
     @Override
     public T insert(Long userId, T model) {
-        model.setCreatorUserId(userId);
-        model.setCreationTime(new Date());
-        model.setIsDeleted(false);
-        //插入会自动生成id
-        this.save(model);
+        try {
+            model.setCreatorUserId(userId);
+            model.setCreationTime(new Date());
+            model.setIsDeleted(false);
+            //插入会自动生成id
+            this.save(model);
+        } catch (DuplicateKeyException e) {
+            if(model instanceof User || model instanceof Account)
+            throw new DuplicateKeyException("账户名(用户名)已存在！");
+        }
         return this.getById(model.getId());
     }
 
@@ -89,7 +97,7 @@ public abstract class MyBaseServiceImpl<M extends BaseMapper<T>, T extends BaseE
     }
 
     @Override
-    public SuccessCount delete(Long userId, String id) {
+    public SuccessCount delete(Long userId, Long id) {
         //查询记录
         T model = this.getById(id);
         //不可以使用下列方法: 泛型问题

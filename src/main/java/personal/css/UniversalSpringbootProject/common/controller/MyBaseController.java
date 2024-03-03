@@ -72,7 +72,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
      */
     @ApiOperation(value = "删除")
     @DeleteMapping("/delete")
-    public ResponseEntity<ResultVo<SuccessCount>> delete(@ApiParam(hidden = true) Long userId, String id) {
+    public ResponseEntity<ResultVo<SuccessCount>> delete(@ApiParam(hidden = true) Long userId, Long id) {
         return new ResponseEntity<>(new ResultVo<>(true, null, this.service.delete(userId, id)), HttpStatus.OK);
     }
 
@@ -165,7 +165,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
         return new ResponseEntity<>(new ResultVo<>(true,null,this.service.deleteBySql(sql)), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "根据属性-值进行插入",notes = "根据属性字符串结合值字符串进行插入")
+    @ApiOperation(value = "根据属性-值进行插入，完全自定义",notes = "根据属性字符串结合值字符串进行插入")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "properties", value = "属性名字符串，使用','隔开"),
             @ApiImplicitParam(name = "values", value = "值字符串，使用','隔开")
@@ -185,7 +185,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
     }
 
 
-    @ApiOperation(value = "根据属性-值进行插入",notes = "根据属性字符串结合值字符串进行插入")
+    @ApiOperation(value = "根据属性-值进行插入，部分自定义",notes = "根据属性字符串结合值字符串进行插入")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "properties", value = "属性名字符串，使用','隔开"),
             @ApiImplicitParam(name = "values", value = "值字符串，使用','隔开")

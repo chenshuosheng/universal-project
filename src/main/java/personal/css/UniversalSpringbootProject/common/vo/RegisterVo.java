@@ -1,6 +1,5 @@
 package personal.css.UniversalSpringbootProject.common.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 @ApiModel(value = "用户注册信息")
-public class UserVo {
+public class RegisterVo {
 
     @Pattern(regexp = "^[a-zA-Z]\\w{4,15}$",message = "账号规则：需要字母开头，允许5-16字符，允许字母数字下划线！")
     @ApiModelProperty(value = "用户名，定义规则：账号规则：需要字母开头，允许5-16字符，允许字母数字下划线！")
@@ -29,12 +28,10 @@ public class UserVo {
     @Min(value = 10, message = "年龄不能小于10！")
     @Max(value = 50, message = "年龄不能大于50！")
     @ApiModelProperty(value = "年龄，范围[10,50]")
-    @TableField(value = "age")
     private Integer age;
 
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "邮箱格式不符！")
     @ApiModelProperty(value = "邮箱")
-    @TableField(value = "email")
     private String email;
 }
 

@@ -1,0 +1,23 @@
+package personal.css.UniversalSpringbootProject.module.account.service.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.springframework.stereotype.Service;
+import personal.css.UniversalSpringbootProject.common.service.impl.MyBaseServiceImpl;
+import personal.css.UniversalSpringbootProject.module.account.mapper.AccountMapper;
+import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.account.service.AccountService;
+
+/**
+ * @Description: 账户业务处理实现类
+ * @Author: CSS
+ * @Date: 2024/2/29 10:24
+ */
+@Service
+public class AccountServiceImpl extends MyBaseServiceImpl<AccountMapper, Account> implements AccountService {
+    @Override
+    public Account getByName(String name) {
+        LambdaQueryWrapper<Account> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Account::getName,name);
+        return this.getOne(wrapper);
+    }
+}

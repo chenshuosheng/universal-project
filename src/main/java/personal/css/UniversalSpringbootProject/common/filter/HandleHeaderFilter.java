@@ -52,8 +52,11 @@ public class HandleHeaderFilter implements Filter {
                 Map<String, Claim> payLoad = JWTUtil.getPayLoadByAnalysisJWT(jwt);
                 //获取userId
                 Long userId = Long.valueOf(payLoad.get("id").asString());
+                //获取name
+                String name = payLoad.get("name").asString();
                 //将userId存入内存，供本次请求使用
                 httpServletRequest.setAttribute(USER_ID, userId);
+                httpServletRequest.setAttribute(ACCOUNT, name);
 
                 log.info("请求路径如下：\n{}", requestURI);
                 log.info(

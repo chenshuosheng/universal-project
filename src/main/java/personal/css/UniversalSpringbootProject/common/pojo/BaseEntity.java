@@ -33,8 +33,8 @@ public class BaseEntity implements Serializable {
     }};
 
     @ApiModelProperty(value = "主键id")
-    @TableId("id")
-    private String id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(value = "creation_time", updateStrategy = FieldStrategy.NEVER, whereStrategy = FieldStrategy.NOT_EMPTY, jdbcType = JdbcType.TIMESTAMP)

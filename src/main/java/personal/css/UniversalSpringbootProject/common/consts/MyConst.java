@@ -13,7 +13,9 @@ public interface MyConst {
     //token键名
     public static final String AUTHORIZATION = "Authorization";
     //用户id键名，在过滤器中从token中解析得到
-    public static final String USER_ID = "UserId";
+    public static final String USER_ID = "userId";
+    //账户名键名，在过滤器中从token中解析得到
+    public static final String ACCOUNT = "account";
 
 
     //密钥

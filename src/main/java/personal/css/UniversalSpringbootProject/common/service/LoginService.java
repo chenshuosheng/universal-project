@@ -1,6 +1,6 @@
 package personal.css.UniversalSpringbootProject.common.service;
 
-import personal.css.UniversalSpringbootProject.common.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 /**
@@ -15,4 +15,8 @@ public interface LoginService {
     User registerAndSaveInfo(Account account, User user);
 
     Account getOneByName(String name);
+
+    Boolean deleteAccountAndUser(Long userId, String name);
+
+    Account updatePassword(Long userId, Account account);
 }

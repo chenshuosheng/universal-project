@@ -23,7 +23,7 @@ public interface MyBaseService<T> extends IService<T> {
 
     T update(Long userId, T model);
 
-    SuccessCount delete(Long userId, String id);
+    SuccessCount delete(Long userId, Long id);
 
     String getCreateTableSql() throws SQLException;
 
