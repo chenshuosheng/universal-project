@@ -36,7 +36,7 @@ public class GlobalExceptionHandle {
 
     //捕获到数据库重复键异常
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ResultVo<?>> CaughtDuplicateKeyException(HttpServletRequest request, DuplicateKeyException exception){
+    public ResponseEntity<ResultVo<?>> CaughtDuplicateKeyException(HttpServletRequest request, DuplicateKeyException exception) {
         exception.printStackTrace();
         String message = exception.getMessage();
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
@@ -45,7 +45,7 @@ public class GlobalExceptionHandle {
 
     //捕获到查询条件异常
     @ExceptionHandler(BadSqlGrammarException.class)
-    public ResponseEntity<ResultVo<?>> CaughtBadSqlGrammarException(HttpServletRequest request, BadSqlGrammarException exception){
+    public ResponseEntity<ResultVo<?>> CaughtBadSqlGrammarException(HttpServletRequest request, BadSqlGrammarException exception) {
         exception.printStackTrace();
         SQLException sqlException = exception.getSQLException();
         String message = sqlException.getMessage();
@@ -54,7 +54,7 @@ public class GlobalExceptionHandle {
 
     //捕获到mybatis查询异常
     @ExceptionHandler(MyBatisSystemException.class)
-    public ResponseEntity<ResultVo<?>> CaughtMyBatisSystemException(HttpServletRequest request, MyBatisSystemException exception){
+    public ResponseEntity<ResultVo<?>> CaughtMyBatisSystemException(HttpServletRequest request, MyBatisSystemException exception) {
         exception.printStackTrace();
         String message = "数据库操作异常，请联系管理员处理";
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,7 +62,7 @@ public class GlobalExceptionHandle {
 
     //捕获到JSON数据解析异常
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ResultVo<?>> CaughtHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException exception){
+    public ResponseEntity<ResultVo<?>> CaughtHttpMessageNotReadableException(HttpServletRequest request, HttpMessageNotReadableException exception) {
         exception.printStackTrace();
         String message = "解析JSON数据时出现错误，请检查数据格式是否正确";
         return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.BAD_REQUEST);
@@ -70,7 +70,7 @@ public class GlobalExceptionHandle {
 
     //捕获到参数异常
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResultVo<?>> CaughtMethodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException exception){
+    public ResponseEntity<ResultVo<?>> CaughtMethodArgumentNotValidException(HttpServletRequest request, MethodArgumentNotValidException exception) {
         exception.printStackTrace();
         JSONArray array = new JSONArray();
         for (ObjectError error : exception.getAllErrors()) {
@@ -82,14 +82,19 @@ public class GlobalExceptionHandle {
 
     //捕获到运行时异常
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ResultVo<?>> handleRuntimeException(HttpServletRequest request, RuntimeException e){
+    public ResponseEntity<ResultVo<?>> handleRuntimeException(HttpServletRequest request, RuntimeException e) {
         e.printStackTrace();
-        return new ResponseEntity<>(new ResultVo<>(false, e.getCause().getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
+        String message;
+        if (null != e.getCause())
+            message = e.getCause().getMessage();
+        else
+            message = e.getMessage();
+        return new ResponseEntity<>(new ResultVo<>(false, message, null), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     //捕获到Exception异常
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResultVo<?>> handleException(Exception e){
+    public ResponseEntity<ResultVo<?>> handleException(Exception e) {
         e.printStackTrace();
         return new ResponseEntity<>(new ResultVo<>(false, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
     }

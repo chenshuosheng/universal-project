@@ -150,7 +150,7 @@ public abstract class MyBaseController<S extends MyBaseService<T>, T extends Bas
     @ApiImplicitParams({
             @ApiImplicitParam(name = "sql", value = "表名请使用TABLE_NAME进行代替")
     })
-    @GetMapping("/updateBySql")
+    @PutMapping("/updateBySql")
     public ResponseEntity<ResultVo<?>> updateBySql(@ApiParam(hidden = true) Long userId, @RequestParam @Pattern(regexp = "^.*\\s+TABLE_NAME\\s+.*$", message = "传入sql未包含TABLE_NAME！") String sql) throws SQLException {
         return new ResponseEntity<>(new ResultVo<>(true,null,this.service.updateBySql(sql)), HttpStatus.OK);
     }

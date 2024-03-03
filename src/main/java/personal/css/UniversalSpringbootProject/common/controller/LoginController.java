@@ -133,8 +133,8 @@ public class LoginController {
 
 
     @ApiOperation(value = "修改密码")
-    @PostMapping("/updatePassword")
-    public ResponseEntity<ResultVo<String>> updatePasswordPublic(@ApiParam(hidden = true) Long userId, @RequestBody UpdatePasswordVo model) {
+    @PutMapping("/updatePassword")
+    public ResponseEntity<ResultVo<String>> updatePasswordPublic(@ApiParam(hidden = true) Long userId, @Validated @RequestBody UpdatePasswordVo model) {
         Account account = loginService.getOneByName(model.getName());
 
         if (null == account)
@@ -152,6 +152,6 @@ public class LoginController {
                 return new ResponseEntity<>(new ResultVo(false, null, "恭喜您，密码修改成功！"), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(new ResultVo(false, "密码错误！登录失败！", null), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new ResultVo(false, "原密码错误！修改失败！", null), HttpStatus.BAD_REQUEST);
     }
 }
