@@ -12,6 +12,8 @@ public interface MyConst {
     public static final String ABP_TENANT_ID = "Abp.Tenantid";
     //token键名
     public static final String AUTHORIZATION = "Authorization";
+    //过期时间
+    public  static final Long EXPIRATION_TIME = 60000L;       //单位毫秒，1分钟
     //用户id键名，在过滤器中从token中解析得到
     public static final String USER_ID = "userId";
     //账户名键名，在过滤器中从token中解析得到

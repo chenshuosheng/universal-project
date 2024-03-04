@@ -7,9 +7,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.EXPIRATION_TIME;
 import static personal.css.UniversalSpringbootProject.common.consts.MyConst.SECRET;
 
 /**
@@ -52,5 +55,20 @@ public class JWTUtil {
         DecodedJWT verify = verifier.verify(jwt);
 
         return verify.getClaims();
+    }
+
+
+    /**
+     * 将身份令牌存储到客户端Cookie
+     *
+     * @param response
+     * @param jwt
+     */
+    public static void setTokenToCookie(HttpServletResponse response, String jwt) {
+        Cookie cookie = new Cookie("token", jwt);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) (EXPIRATION_TIME *2/1000));
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 }

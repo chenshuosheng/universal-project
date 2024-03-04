@@ -1,6 +1,7 @@
 package personal.css.UniversalSpringbootProject.common.filter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +20,22 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
 /**
  * @Description: 对请求头进行处理的过滤器：
  * 在请求到达Servlet之前或响应返回给客户端之前对请求和响应进行预处理和后处理操作
+ * 详细功能：从请求头中获取token，解析并将userId、账户名存入内存，供本次请求使用
  * @Author: CSS
  * @Date: 2024/2/29 14:24
  */
 
 @WebFilter(
-        urlPatterns = "*",                //匹配任意请求路径
-        filterName = "HandleHeaderFilter" //默认为类名
+        urlPatterns = {
+                "/account/*",
+                "/user/*",
+                "/loginManage/*"
+        },                //匹配请求路径
+        filterName = "HandleTokenFromHeaderToSetAttributeFilter" //默认为类名
 )
-public class HandleHeaderFilter implements Filter {
+public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
 
-    private static final Logger log = LoggerFactory.getLogger(HandleHeaderFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(HandleTokenFromHeaderToSetAttributeFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -42,6 +48,7 @@ public class HandleHeaderFilter implements Filter {
         String jwt = token;
         String requestURI = httpServletRequest.getRequestURI();
 
+        //判断请求是否含有token
         if (null != token && !"".equals(token.trim())){
             if(token.startsWith("Bearer "))
                 jwt = token.substring(7);
@@ -54,7 +61,7 @@ public class HandleHeaderFilter implements Filter {
                 Long userId = Long.valueOf(payLoad.get("id").asString());
                 //获取name
                 String name = payLoad.get("name").asString();
-                //将userId存入内存，供本次请求使用
+                //将userId、账户名存入内存，供本次请求使用
                 httpServletRequest.setAttribute(USER_ID, userId);
                 httpServletRequest.setAttribute(ACCOUNT, name);
 
@@ -66,9 +73,15 @@ public class HandleHeaderFilter implements Filter {
                                 "\nuserId：{}",
                         tenantId, token, userId
                 );
+            } catch (TokenExpiredException e){
+                e.printStackTrace();
+                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+                httpServletResponse.setContentType("application/json;charset=UTF-8");
+                httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
+                return; // 直接返回，不再向下传递请求
             } catch (JWTVerificationException e) {
                 e.printStackTrace();
-                httpServletResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
                 httpServletResponse.setContentType("application/json;charset=UTF-8");
                 httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
                 return; // 直接返回，不再向下传递请求

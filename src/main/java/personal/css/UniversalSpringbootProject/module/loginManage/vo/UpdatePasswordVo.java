@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.vo;
+package personal.css.UniversalSpringbootProject.module.loginManage.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

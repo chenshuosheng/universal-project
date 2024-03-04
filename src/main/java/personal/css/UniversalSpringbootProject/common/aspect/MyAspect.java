@@ -15,6 +15,9 @@ import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER_ID;
 
 /**
@@ -31,13 +34,9 @@ public class MyAspect {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    //定义切点包含基础控制层接口、所有具体控制层（不包含公共接口）接口
-    @Pointcut("" +
-                "(execution(public * personal.css.UniversalSpringbootProject.common.controller.*.*(..)) " +
-                    "|| " +
-                "execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*(..))) " +
-                "&& " +
-            "!execution(public * personal.css.UniversalSpringbootProject.*.controller.*.*Public(..))")
+    //定义切点包含控制层接口且不包含公共接口（含Public结尾的方法）
+    @Pointcut("execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*(..))" +
+            " && !execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*Public(..))")
     private void baseOrOtherNotPublicController(){}
 
 
@@ -45,6 +44,11 @@ public class MyAspect {
     @Around(value = "baseOrOtherNotPublicController()")
     private Object Handle(ProceedingJoinPoint point) throws Throwable {
 
+        long start = System.currentTimeMillis();
+        LocalDateTime now = LocalDateTime.now();
+        log.info("进入切面MyAspect：{}", now);
+
+        //userId的属性值来源于HandleHeaderFilter
         Long userId = (Long)httpServletRequest.getAttribute(USER_ID);
         if(userId == null){
             return new ResponseEntity<>(new ResultVo<>(false, "非法访问！",null), HttpStatus.UNAUTHORIZED);
@@ -53,6 +57,10 @@ public class MyAspect {
         Signature signature = point.getSignature();
         Object[] args = point.getArgs();
         args[0] = userId;
+
+        long end = System.currentTimeMillis();
+        log.info("退出切面MyAspect：{}", new Date(end));
+        log.info("经过切面MyAspect耗时：{}秒", (end-start)/1000.0);
         return point.proceed(args);
     }
 

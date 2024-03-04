@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import personal.css.UniversalSpringbootProject.module.test_mybatis_plus.mapper.UserMapper_0;
-import personal.css.UniversalSpringbootProject.module.test_mybatis_plus.pojo.User;
+import personal.css.UniversalSpringbootProject.module.user.mapper.UserMapper;
+import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -18,18 +18,18 @@ import java.util.Map;
 class UniversalSpringbootProjectApplicationTests {
 
     @Autowired
-    public UserMapper_0 userMapper0;
+    public UserMapper userMapper;
 
     @Test
     void contextLoads() {
-        List<User> users = userMapper0.selectList(null);
+        List<User> users = userMapper.selectList(null);
         users.forEach(System.out::println);
     }
 
     @Test
     void testPage(){
         Page<User> userPage = new Page<>(1,3);
-        userPage = userMapper0.selectPage(userPage, null);
+        userPage = userMapper.selectPage(userPage, null);
         System.out.println(userPage.getTotal());
         userPage.getRecords().forEach(System.out::println);
     }

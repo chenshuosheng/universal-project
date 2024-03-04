@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.service.impl;
+package personal.css.UniversalSpringbootProject.module.loginManage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.slf4j.Logger;
@@ -7,16 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import personal.css.UniversalSpringbootProject.common.service.LoginService;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
 import personal.css.UniversalSpringbootProject.module.account.mapper.AccountMapper;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.account.service.AccountService;
+import personal.css.UniversalSpringbootProject.module.loginManage.service.LoginService;
 import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 import personal.css.UniversalSpringbootProject.module.user.service.UserService;
 
 /**
- * @Description: 账号管理相关业务服务层实现类
+ * @Description: 登录管理相关业务服务层实现类
  * @Author: CSS
  * @Date: 2024/3/2 21:01
  */

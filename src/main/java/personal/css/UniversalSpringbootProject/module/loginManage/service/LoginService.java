@@ -1,10 +1,10 @@
-package personal.css.UniversalSpringbootProject.common.service;
+package personal.css.UniversalSpringbootProject.module.loginManage.service;
 
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 /**
- * @Description: 账号管理相关业务服务层接口
+ * @Description: 登录管理相关业务服务层接口
  * @Author: CSS
  * @Date: 2024/3/2 21:00
  */
