@@ -11,14 +11,12 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import personal.css.UniversalSpringbootProject.common.utils.code.Base64Util;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.TokenVo;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.EXPIRATION_TIME;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.SECRET;
 
 /**
  * @Description: Token相关工具
@@ -117,48 +115,6 @@ public class TokenUtil {
             throw new TokenExpiredException(e.getMessage());
         }catch (JWTDecodeException e) {
             throw new JWTDecodeException(e.getMessage());
-        }
-    }
-
-
-    /**
-     * 将数据存储到客户端Cookie，保存时间为过期时间的两倍
-     *
-     * @param response
-     * @param k        键名
-     * @param v        值
-     */
-    public static void setDataToCookie(HttpServletResponse response, String k, String v) {
-        Cookie cookie = new Cookie(k, v);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) (EXPIRATION_TIME * 2 / 1000));
-        cookie.setHttpOnly(true);
-        response.addCookie(cookie);
-    }
-
-
-    /**
-     * 从客户端获取Cookie的值
-     *
-     * @param httpServletRequest
-     * @param cookieName
-     * @return
-     */
-    public static String getValueFromCookies(HttpServletRequest httpServletRequest, String cookieName) throws Exception {
-        try {
-            Cookie[] cookies = httpServletRequest.getCookies();
-            if(null == cookies)
-                return null;
-            for (int i = 0; i < cookies.length; i++) {
-                Cookie cookie = cookies[i];
-                String name = cookie.getName();
-                if (cookieName.equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
         }
     }
 }

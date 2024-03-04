@@ -6,6 +6,8 @@ import com.auth0.jwt.interfaces.Claim;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import personal.css.UniversalSpringbootProject.common.NoPermissionException;
+import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
 import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
 import personal.css.UniversalSpringbootProject.common.utils.code.Base64Util;
 import personal.css.UniversalSpringbootProject.module.loginManage.dto.IdentityDto;
@@ -46,10 +48,8 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-        String tenantId = httpServletRequest.getHeader(ABP_TENANT_ID);
         String accessToken = httpServletRequest.getHeader(ACCESS_TOKEN);
         String jwt = null;
-        String requestURI = httpServletRequest.getRequestURI();
 
         //解码
         accessToken = Base64Util.decodeWithBase64(accessToken);
@@ -62,19 +62,13 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 jwt = accessToken;
 
             try {
-                //解析token获得userId
-                IdentityDto identityDto = setAttributes(jwt, httpServletRequest);
-                Long userId = identityDto.getUserId();
-                String name = identityDto.getName();
-                log.info("请求路径如下：\n{}", requestURI);
-                log.info(
-                        "获取到部分请求头信息如下：" +
-                                "\ntenantId: {}" +
-                                "\naccessToken: {}" +
-                                "\nuserId：{}" +
-                                "\nname：{}",
-                        tenantId, accessToken, userId, name
-                );
+                setAttributes(jwt, httpServletRequest);
+            } catch (NoPermissionException e) {
+                e.printStackTrace();
+                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+                httpServletResponse.setContentType("application/json;charset=UTF-8");
+                httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                return; // 直接返回，不再向下传递请求
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -86,7 +80,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 //从cookie中获取刷新令牌
                 String refreshToken = null;
                 try {
-                    refreshToken = TokenUtil.getValueFromCookies(httpServletRequest, Refresh_TOKEN);
+                    refreshToken = CookieUtil.getValueFromCookies(httpServletRequest, Refresh_TOKEN);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -98,7 +92,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 if (null != refreshToken && !"".equals(refreshToken.trim())) {
                     //解码
                     refreshToken = Base64Util.decodeWithBase64(refreshToken);
-                    if(refreshToken.startsWith("Bearer "))
+                    if (refreshToken.startsWith("Bearer "))
                         jwt = refreshToken.substring(7);
                     else
                         jwt = refreshToken;
@@ -109,6 +103,12 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         IdentityDto identityDto = setAttributes(jwt, httpServletRequest);
                         //重新构造有效载荷，受困于类型不同，无法直接使用payLoad
                         tokenVo = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
+                    } catch (NoPermissionException ex) {
+                        ex.printStackTrace();
+                        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        httpServletResponse.setContentType("application/json;charset=UTF-8");
+                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                        return; // 直接返回，不再向下传递请求
                     } catch (IllegalArgumentException ex) {
                         ex.printStackTrace();
                         httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -127,11 +127,17 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         httpServletResponse.setContentType("application/json;charset=UTF-8");
                         httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
                         return; // 直接返回，不再向下传递请求
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        httpServletResponse.setContentType("application/json;charset=UTF-8");
+                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                        return; // 直接返回，不再向下传递请求
                     }
 
                     //将token存储到客户端Cookie
-                    TokenUtil.setDataToCookie(httpServletResponse, ACCESS_TOKEN, tokenVo.getAccessToken());
-                    TokenUtil.setDataToCookie(httpServletResponse, Refresh_TOKEN, tokenVo.getRefreshToken());
+                    CookieUtil.setCookie(httpServletResponse, ACCESS_TOKEN, tokenVo.getAccessToken());
+                    CookieUtil.setCookie(httpServletResponse, Refresh_TOKEN, tokenVo.getRefreshToken());
 
                 } else {
                     httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -145,6 +151,12 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 httpServletResponse.setContentType("application/json;charset=UTF-8");
                 httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
                 return; // 直接返回，不再向下传递请求
+            } catch (IOException e) {
+                e.printStackTrace();
+                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                httpServletResponse.setContentType("application/json;charset=UTF-8");
+                httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                return; // 直接返回，不再向下传递请求
             }
         }
 
@@ -153,17 +165,36 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    private IdentityDto setAttributes(String jwt, HttpServletRequest httpServletRequest) throws IllegalArgumentException, TokenExpiredException, JWTDecodeException {
+    private IdentityDto setAttributes(String jwt, HttpServletRequest httpServletRequest) throws NoPermissionException, IllegalArgumentException, TokenExpiredException, JWTDecodeException, IOException {
         try {
+            String tenantId = httpServletRequest.getHeader(ABP_TENANT_ID);
+            String requestURI = httpServletRequest.getRequestURI();
+
             //解析token获取有效载荷
             Map<String, Claim> payLoad = TokenUtil.getPayLoadByAnalysisJWT(jwt);
             //获取userId
             Long userId = payLoad.get("id").asLong();
+
+            if (requestURI.startsWith("/account") && 1L != userId) {
+                throw new NoPermissionException();
+            }
+
             //获取name
             String name = payLoad.get("name").asString();
             //将userId、账户名存入内存，供本次请求使用
             httpServletRequest.setAttribute(USER_ID, userId);
             httpServletRequest.setAttribute(ACCOUNT, name);
+
+            log.info("请求路径如下：\n{}", requestURI);
+            log.info(
+                    "获取到部分请求头信息如下：" +
+                            "\ntenantId: {}" +
+                            "\naccessToken: {}" +
+                            "\nuserId：{}" +
+                            "\nname：{}",
+                    tenantId, "Bearer " + jwt, userId, name
+            );
+
             return new IdentityDto(userId, name);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());

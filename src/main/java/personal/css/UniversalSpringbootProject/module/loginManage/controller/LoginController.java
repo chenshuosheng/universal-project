@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
+import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
 import personal.css.UniversalSpringbootProject.common.utils.Md5Util;
+import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.loginManage.service.LoginService;
@@ -21,7 +22,8 @@ import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ACCESS_TOKEN;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.Refresh_TOKEN;
 
 /**
  * @Description: 登录管理相关控制层接口
@@ -81,8 +83,8 @@ public class LoginController {
             TokenVo tokenVo = TokenUtil.getTokenVo(account.getId(), account.getName());
 
             //将token存储到客户端Cookie
-            TokenUtil.setDataToCookie(response, ACCESS_TOKEN, tokenVo.getAccessToken());
-            TokenUtil.setDataToCookie(response, Refresh_TOKEN, tokenVo.getRefreshToken());
+            CookieUtil.setCookie(response, ACCESS_TOKEN, tokenVo.getAccessToken());
+            CookieUtil.setCookie(response, Refresh_TOKEN, tokenVo.getRefreshToken());
 
             return new ResponseEntity<>(new ResultVo(false, null, tokenVo), HttpStatus.OK);
         }
@@ -115,7 +117,10 @@ public class LoginController {
 
     @ApiOperation(value = "退出登录")
     @PostMapping("/loginManage/logout")
-    public ResponseEntity<ResultVo<String>> logout(@ApiParam(hidden = true) Long userId) {
+    public ResponseEntity<ResultVo<String>> logout(@ApiParam(hidden = true) Long userId, HttpServletResponse response) {
+        //将cookie从客户端删除
+        CookieUtil.removeCookie(ACCESS_TOKEN, response);
+        CookieUtil.removeCookie(Refresh_TOKEN, response);
         return new ResponseEntity<>(new ResultVo(true, null, "退出成功！"), HttpStatus.OK);
     }
 
