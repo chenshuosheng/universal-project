@@ -16,8 +16,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ABP_TENANT_ID;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ACCESS_TOKEN;
+
 /**
- * @Description: TODO
+ * @Description: 接口文档配置
  * @Author: CSS
  * @Date: 2024/2/28 22:33
  */
@@ -51,8 +54,8 @@ public class SwaggerConfig {
     //配置接口的安全认证方式
     private List<ApiKey> security() {
         ArrayList<ApiKey> apiKeys = new ArrayList<>();
-        apiKeys.add(new ApiKey("Authorization", "Authorization", "header"));
-        apiKeys.add(new ApiKey("Abp.TenantId", "Abp.TenantId", "header"));
+        apiKeys.add(new ApiKey(ACCESS_TOKEN, ACCESS_TOKEN, "header"));
+        apiKeys.add(new ApiKey(ABP_TENANT_ID, ABP_TENANT_ID, "header"));
         return apiKeys;
     }
 }

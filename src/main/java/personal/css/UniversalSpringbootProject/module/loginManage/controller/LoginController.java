@@ -1,6 +1,5 @@
 package personal.css.UniversalSpringbootProject.module.loginManage.controller;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -10,22 +9,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import personal.css.UniversalSpringbootProject.common.utils.JWTUtil;
+import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
 import personal.css.UniversalSpringbootProject.common.utils.Md5Util;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.loginManage.service.LoginService;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.RegisterVo;
+import personal.css.UniversalSpringbootProject.module.loginManage.vo.TokenVo;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.UpdatePasswordVo;
 import personal.css.UniversalSpringbootProject.module.user.pojo.User;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import static personal.css.UniversalSpringbootProject.common.consts.MyConst.EXPIRATION_TIME;
-import static personal.css.UniversalSpringbootProject.common.consts.MyConst.SECRET;
+import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
 
 /**
  * @Description: 登录管理相关控制层接口
@@ -73,7 +69,7 @@ public class LoginController {
 
     @ApiOperation(value = "登录", notes = "使用账户名+密码进行登录")
     @PostMapping("api/public/login")
-    public ResponseEntity<ResultVo<String>> loginPublic(@RequestParam String name, @RequestParam String password, HttpServletResponse response) {
+    public ResponseEntity<ResultVo<?>> loginPublic(@RequestParam String name, @RequestParam String password, HttpServletResponse response) {
         Account account = loginService.getOneByName(name);
 
         if (null == account)
@@ -81,26 +77,14 @@ public class LoginController {
 
         //校对密码
         if (Md5Util.checkPassword(password, account.getPassword())) {
-            //有效载荷主体信息
-            Map<String, String> map = new HashMap<>();
-            map.put("id", account.getId().toString());
-            map.put("name", account.getName());
+            //构造token组对象
+            TokenVo tokenVo = TokenUtil.getTokenVo(account.getId(), account.getName());
 
-            //过期时间
-            Date expires = new Date(System.currentTimeMillis() + EXPIRATION_TIME);
+            //将token存储到客户端Cookie
+            TokenUtil.setDataToCookie(response, ACCESS_TOKEN, tokenVo.getAccessToken());
+            TokenUtil.setDataToCookie(response, Refresh_TOKEN, tokenVo.getRefreshToken());
 
-            //使用密钥与加密算法得到的签名
-            Algorithm algorithm = Algorithm.HMAC256(SECRET);
-
-            //生成token
-            String jwt = JWTUtil.createJWT(map, expires, algorithm);
-
-            String token = "Bearer " + jwt;
-
-            //将身份令牌存储到客户端Cookie
-            JWTUtil.setTokenToCookie(response, jwt);
-
-            return new ResponseEntity<>(new ResultVo(false, null, token), HttpStatus.OK);
+            return new ResponseEntity<>(new ResultVo(false, null, tokenVo), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(new ResultVo(false, "密码错误！登录失败！", null), HttpStatus.BAD_REQUEST);
