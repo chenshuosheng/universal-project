@@ -95,6 +95,22 @@ public class TokenUtil {
 
 
     /**
+     *
+     *
+     * @param token
+     * @return
+     */
+    public static String getJwtWithoutBearer(String token) {
+        String jwt;
+        if (token.startsWith("Bearer "))
+            jwt = token.substring(7);
+        else
+            jwt = token;
+        return jwt;
+    }
+
+
+    /**
      * 解析JWT令牌得到有效载荷
      *
      * @param jwt

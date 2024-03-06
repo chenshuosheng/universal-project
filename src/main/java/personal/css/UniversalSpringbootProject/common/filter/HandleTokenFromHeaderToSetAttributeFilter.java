@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import personal.css.UniversalSpringbootProject.common.NoPermissionException;
 import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
@@ -51,111 +52,96 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
         String accessToken = httpServletRequest.getHeader(ACCESS_TOKEN);
         String jwt = null;
 
-        //解码
-        accessToken = Base64Util.decodeWithBase64(accessToken);
+        //身份令牌判空
+        if (StringUtils.isNotBlank(accessToken)) {
+            //解码身份令牌
+            try {
+                accessToken = Base64Util.decodeWithBase64(accessToken);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                return;
+            }
 
-        //判断请求是否含有token
-        if (null != accessToken && !"".equals(accessToken.trim())) {
-            if (accessToken.startsWith("Bearer "))
-                jwt = accessToken.substring(7);
-            else
-                jwt = accessToken;
+            //去掉"Bearer "
+            jwt = TokenUtil.getJwtWithoutBearer(accessToken);
 
+            //根据jwt提取用户信息存入内存供本次请求使用
             try {
                 setAttributes(jwt, httpServletRequest);
             } catch (NoPermissionException e) {
                 e.printStackTrace();
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
-                return; // 直接返回，不再向下传递请求
+                writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                return;
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
-                return; // 直接返回，不再向下传递请求
+                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                return;
             } catch (TokenExpiredException e) {
                 e.printStackTrace();
-                //从cookie中获取刷新令牌
+                //身份令牌过期，从cookie中获取刷新令牌
                 String refreshToken = null;
                 try {
                     refreshToken = CookieUtil.getValueFromCookies(httpServletRequest, Refresh_TOKEN);
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    httpServletResponse.setContentType("application/json;charset=UTF-8");
-                    httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
-                    return; // 直接返回，不再向下传递请求
+                    writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                    return;
                 }
 
-                if (null != refreshToken && !"".equals(refreshToken.trim())) {
-                    //解码
-                    refreshToken = Base64Util.decodeWithBase64(refreshToken);
-                    if (refreshToken.startsWith("Bearer "))
-                        jwt = refreshToken.substring(7);
-                    else
-                        jwt = refreshToken;
+                //成功获取到刷新令牌，判空
+                if (StringUtils.isNotBlank(refreshToken)) {
+                    //解码刷新令牌
+                    try {
+                        refreshToken = Base64Util.decodeWithBase64(refreshToken);
+                    } catch (RuntimeException ex) {
+                        ex.printStackTrace();
+                    }
 
-                    TokenVo tokenVo = null;
+                    //去掉"Bearer "
+                    jwt = TokenUtil.getJwtWithoutBearer(refreshToken);
 
+                    //新token组
+                    TokenVo newTokens = null;
+
+                    //根据jwt提取用户信息存入内存供本次请求使用
                     try {
                         IdentityDto identityDto = setAttributes(jwt, httpServletRequest);
                         //重新构造有效载荷，受困于类型不同，无法直接使用payLoad
-                        tokenVo = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
+                        newTokens = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
                     } catch (NoPermissionException ex) {
                         ex.printStackTrace();
-                        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
-                        return; // 直接返回，不再向下传递请求
-                    } catch (IllegalArgumentException ex) {
+                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                        return;
+                    } catch (IllegalArgumentException | IOException ex) {
                         ex.printStackTrace();
-                        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
-                        return; // 直接返回，不再向下传递请求
+                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                        return;
                     } catch (TokenExpiredException ex) {
                         ex.printStackTrace();
-                        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
-                        return; // 直接返回，不再向下传递请求
+                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
+                        return;
                     } catch (JWTDecodeException ex) {
                         ex.printStackTrace();
-                        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
-                        return; // 直接返回，不再向下传递请求
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
-                        return; // 直接返回，不再向下传递请求
+                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
+                        return;
                     }
 
                     //将token存储到客户端Cookie
-                    CookieUtil.setCookie(httpServletResponse, ACCESS_TOKEN, tokenVo.getAccessToken());
-                    CookieUtil.setCookie(httpServletResponse, Refresh_TOKEN, tokenVo.getRefreshToken());
+                    CookieUtil.setCookie(httpServletResponse, ACCESS_TOKEN, newTokens.getAccessToken());
+                    CookieUtil.setCookie(httpServletResponse, Refresh_TOKEN, newTokens.getRefreshToken());
 
                 } else {
-                    httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                    httpServletResponse.setContentType("application/json;charset=UTF-8");
-                    httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
-                    return; // 直接返回，不再向下传递请求
+                    writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
+                    return;
                 }
             } catch (JWTDecodeException e) {
                 e.printStackTrace();
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.getWriter().write("{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
-                return; // 直接返回，不再向下传递请求
+                writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
-                httpServletResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.getWriter().write("{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
                 return; // 直接返回，不再向下传递请求
             }
         }
@@ -165,6 +151,28 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+
+
+
+    private void writeResponse(HttpServletResponse httpServletResponse, int status, String contentType, String message) throws IOException {
+        httpServletResponse.setStatus(status);
+        httpServletResponse.setContentType(contentType);
+        httpServletResponse.getWriter().write(message);
+    }
+
+
+    /**
+     * 根据jwt提取用户信息存入内存供本次请求使用
+     *
+     * @param jwt
+     * @param httpServletRequest
+     * @return
+     * @throws NoPermissionException
+     * @throws IllegalArgumentException
+     * @throws TokenExpiredException
+     * @throws JWTDecodeException
+     * @throws IOException
+     */
     private IdentityDto setAttributes(String jwt, HttpServletRequest httpServletRequest) throws NoPermissionException, IllegalArgumentException, TokenExpiredException, JWTDecodeException, IOException {
         try {
             String tenantId = httpServletRequest.getHeader(ABP_TENANT_ID);

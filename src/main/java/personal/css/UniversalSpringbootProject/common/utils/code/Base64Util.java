@@ -15,9 +15,13 @@ public class Base64Util {
         return encoder.encodeToString(bytes);
     }
 
-    public static String decodeWithBase64(String s) {
-        Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decodedBytes = decoder.decode(s);
-        return new String(decodedBytes);
+    public static String decodeWithBase64(String s) throws RuntimeException{
+        try {
+            Base64.Decoder decoder = Base64.getDecoder();
+            byte[] decodedBytes = decoder.decode(s);
+            return new String(decodedBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("数据解析异常，请确认信息是否正确！");
+        }
     }
 }

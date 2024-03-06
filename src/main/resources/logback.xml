@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    scan：当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true；
+    scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟；
+    debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration xmlns="http://ch.qos.logback/xml/ns/logback"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://ch.qos.logback/xml/ns/logback
+                https://raw.githubusercontent.com/enricopulatzo/logback-XSD/master/src/main/xsd/logback.xsd"
+               scan="true" scanPeriod="1 minute" debug="false">
+    <!--动态日志级别-->
+    <jmxConfigurator/>
+
+    <!--日志文件所在目录-->
+    <property name="LOG_HOME" value="./logs"/>
+
+    <!--
+        格式化输出：%d表示日期，%t：表示线程名，
+        %-5level：表示级别从左显示5个字符宽度，
+        %c：类全路径，%msg：日志消息，%M：方法名，
+        %L：日志所属行号，%n：换行符（Windows平台为"\r\n"，Unix平台为"\n"）
+    -->
+    <property name="FORMAT" value="[%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %c.%M：%L：%msg%n"/>
+
+    <!--ConsoleAppender 控制台输出日志-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                ${FORMAT}
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--ERROR级别日志-->
+    <!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 RollingFileAppender-->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--如果日志级别等于配置级别，过滤器会根据onMath和onMismatch接收或拒绝日志-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!--设置过滤级别-->
+            <level>ERROR</level>
+            <!--用于配置符合过滤条件的操作-->
+            <onMatch>ACCEPT</onMatch>
+            <!--用于匹配不符合过滤条件的操作-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <!--
+            滚动时产生的文件的存放位置及文件名称：
+            %d{yyyy-MM-dd}：按天进行日志滚动，
+            %i：当文件大小超过maxFileSize时，按照i进行文件滚动，i的值从0开始递增
+        -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/error/%d{yyyy-MM-dd}/error-%i.log
+            </fileNamePattern>
+
+            <!--日志文件保留天数-->
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                ${FORMAT}
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--WARN级别日志-->
+    <appender name="WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/warn/%d{yyyy-MM-dd}warn-%i.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                ${FORMAT}
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--INFO级别日志-->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/info/%d{yyyy-MM-dd}info-%i.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                ${FORMAT}
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <!--DEBUG级别日志-->
+    <appender name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_HOME}/debug/%d{yyyy-MM-dd}debug-%i.log
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>5MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>
+                ${FORMAT}
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 只有该级别日志及以上级别日志才会输出到指定渠道 -->
+    <!-- 测试：debug。上生产环境时，需要改成info或error -->
+    <root level="info">
+        <!--控制台输出-->
+        <appender-ref ref="CONSOLE"/>
+
+        <!--文件输出-->
+        <appender-ref ref="ERROR"/>
+        <appender-ref ref="WARN"/>
+        <appender-ref ref="INFO"/>
+    </root>
+</configuration>
