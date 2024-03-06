@@ -3,8 +3,7 @@ package personal.css.UniversalSpringbootProject.common.filter;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import personal.css.UniversalSpringbootProject.common.NoPermissionException;
 import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
@@ -38,9 +37,10 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
         },                //匹配请求路径
         filterName = "HandleTokenFromHeaderToSetAttributeFilter" //默认为类名
 )
+@Slf4j
 public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
 
-    private static final Logger log = LoggerFactory.getLogger(HandleTokenFromHeaderToSetAttributeFilter.class);
+    //private static final Logger log = LoggerFactory.getLogger(HandleTokenFromHeaderToSetAttributeFilter.class);
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

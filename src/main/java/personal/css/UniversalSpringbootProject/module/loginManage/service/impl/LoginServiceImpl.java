@@ -1,8 +1,7 @@
 package personal.css.UniversalSpringbootProject.module.loginManage.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,10 @@ import personal.css.UniversalSpringbootProject.module.user.service.UserService;
  * @Date: 2024/3/2 21:01
  */
 @Service
+@Slf4j
 public class LoginServiceImpl implements LoginService {
 
-    private static final Logger log = LoggerFactory.getLogger(LoginServiceImpl.class);
+    //private static final Logger log = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     @Autowired
     private AccountMapper accountMapper;

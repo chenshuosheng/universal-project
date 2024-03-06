@@ -1,8 +1,7 @@
 package personal.css.UniversalSpringbootProject;
 
 import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -15,9 +14,10 @@ import java.net.UnknownHostException;
 @ServletComponentScan  //启用Servlet组件扫描，以便识别和注册过滤器
 @EnableSwaggerBootstrapUI
 @SpringBootApplication
+@Slf4j
 public class UniversalSpringbootProjectApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(UniversalSpringbootProjectApplication.class);
+    //private static final Logger log = LoggerFactory.getLogger(UniversalSpringbootProjectApplication.class);
 
     public static void main(String[] args) throws UnknownHostException {
 

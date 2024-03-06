@@ -1,12 +1,11 @@
 package personal.css.UniversalSpringbootProject.common.aspect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +13,6 @@ import org.springframework.stereotype.Component;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER_ID;
 
@@ -27,9 +23,11 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER
  */
 @Aspect
 @Component
+@Slf4j
 public class MyAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(MyAspect.class);
+    //使用@Slf4j
+    //private static final Logger log = LoggerFactory.getLogger(MyAspect.class);
 
     @Autowired
     private HttpServletRequest httpServletRequest;
@@ -45,8 +43,7 @@ public class MyAspect {
     private Object Handle(ProceedingJoinPoint point) throws Throwable {
 
         long start = System.currentTimeMillis();
-        LocalDateTime now = LocalDateTime.now();
-        log.info("进入切面MyAspect：{}", now);
+        log.info("\n进入切面MyAspect...");
 
         //userId的属性值来源于HandleHeaderFilter
         Long userId = (Long)httpServletRequest.getAttribute(USER_ID);
@@ -59,8 +56,7 @@ public class MyAspect {
         args[0] = userId;
 
         long end = System.currentTimeMillis();
-        log.info("退出切面MyAspect：{}", new Date(end));
-        log.info("经过切面MyAspect耗时：{}秒", (end-start)/1000.0);
+        log.info("退出切面MyAspect耗时：{}秒", (end-start)/1000.0);
         return point.proceed(args);
     }
 
