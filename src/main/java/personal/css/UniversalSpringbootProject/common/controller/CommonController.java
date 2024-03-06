@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import personal.css.UniversalSpringbootProject.common.service.CommonService;
+import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 
 import java.util.List;
@@ -28,14 +29,16 @@ public class CommonController {
     private CommonService commonService;
 
     @ApiOperation(value = "获取国家列表")
-    @GetMapping(value =  "/countries")
-    public ResponseEntity<ResultVo<List<String>>> getCountriesPublic(){
-        return new ResponseEntity<>(new ResultVo<>(true,null,commonService.getCountries()), HttpStatus.OK);
+    @GetMapping(value = "/countries")
+    public ResponseEntity<ResultVo<ListResult<String>>> getCountriesPublic() {
+        List<String> countries = commonService.getCountries();
+        return new ResponseEntity<>(new ResultVo<>(true, null, new ListResult<>(countries.size(), countries)), HttpStatus.OK);
     }
 
     @ApiOperation(value = "获取民族列表")
-    @GetMapping(value =  "/nations")
-    public ResponseEntity<ResultVo<List<String>>> getNationsPublic(){
-        return new ResponseEntity<>(new ResultVo<>(true,null,commonService.getNations()), HttpStatus.OK);
+    @GetMapping(value = "/nations")
+    public ResponseEntity<ResultVo<ListResult<String>>> getNationsPublic() {
+        List<String> nations = commonService.getNations();
+        return new ResponseEntity<>(new ResultVo<>(true, null, new ListResult<>(nations.size(), nations)), HttpStatus.OK);
     }
 }

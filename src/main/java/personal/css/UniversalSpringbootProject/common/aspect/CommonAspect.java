@@ -2,11 +2,11 @@ package personal.css.UniversalSpringbootProject.common.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,8 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER
 @Aspect
 @Component
 @Slf4j
-public class MyAspect {
+@Order(2)
+public class CommonAspect {
 
     //使用@Slf4j
     //private static final Logger log = LoggerFactory.getLogger(MyAspect.class);
@@ -33,17 +34,17 @@ public class MyAspect {
     private HttpServletRequest httpServletRequest;
 
     //定义切点包含控制层接口且不包含公共接口（含Public结尾的方法）
-    @Pointcut("execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*(..))" +
-            " && !execution(public * personal.css.UniversalSpringbootProject.module.*.controller.*.*Public(..))")
-    private void baseOrOtherNotPublicController(){}
+    @Pointcut("execution(public * personal.css.UniversalSpringbootProject..controller..*.*(..))" +
+            "&& !execution(public * personal.css.UniversalSpringbootProject..controller..*.*Public(..))")
+    private void notPublicController(){}
 
 
     //引用切点
-    @Around(value = "baseOrOtherNotPublicController()")
+    @Around(value = "notPublicController()")
     private Object Handle(ProceedingJoinPoint point) throws Throwable {
 
         long start = System.currentTimeMillis();
-        log.info("\n进入切面MyAspect...");
+        log.info("\n进入切面CommonAspect...");
 
         //userId的属性值来源于HandleHeaderFilter
         Long userId = (Long)httpServletRequest.getAttribute(USER_ID);
@@ -51,13 +52,13 @@ public class MyAspect {
             return new ResponseEntity<>(new ResultVo<>(false, "非法访问！",null), HttpStatus.UNAUTHORIZED);
         }
 
-        Signature signature = point.getSignature();
         Object[] args = point.getArgs();
         args[0] = userId;
+        Object proceed = point.proceed(args);
 
         long end = System.currentTimeMillis();
-        log.info("退出切面MyAspect耗时：{}秒", (end-start)/1000.0);
-        return point.proceed(args);
+        log.info("退出切面Common耗时：{}秒", (end-start)/1000.0);
+        return proceed;
     }
 
 

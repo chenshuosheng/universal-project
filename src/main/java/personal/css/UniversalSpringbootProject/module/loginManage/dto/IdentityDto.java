@@ -3,6 +3,7 @@ package personal.css.UniversalSpringbootProject.module.loginManage.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * @Description: 身份标识实体类
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class IdentityDto {
     private Long UserId;
     private String name;

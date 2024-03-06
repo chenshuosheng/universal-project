@@ -15,7 +15,7 @@ public interface MyConst {
     //刷新token键名
     public static final String Refresh_TOKEN = "Refresh.Token";
     //过期时间
-    public  static final Long EXPIRATION_TIME = 60000L;       //单位毫秒，1分钟
+    public  static final Long EXPIRATION_TIME = 600000L;       //单位毫秒，10分钟
     //用户id键名，在过滤器中从token中解析得到
     public static final String USER_ID = "userId";
     //账户名键名，在过滤器中从token中解析得到

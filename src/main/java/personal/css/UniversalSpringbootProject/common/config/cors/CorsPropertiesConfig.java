@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.config;
+package personal.css.UniversalSpringbootProject.common.config.cors;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

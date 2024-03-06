@@ -148,6 +148,21 @@
         </encoder>
     </appender>
 
+
+    <appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+        <!--数据库配置-->
+        <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+            <driverClass>com.mysql.cj.jdbc.Driver</driverClass>
+            <url>jdbc:mysql://localhost:3306/universal_project?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;serverTimezone=UTC</url>
+            <user>root</user>
+            <password>123456</password>
+        </connectionSource>
+
+        <!--自定义过滤器-->
+        <filter class="personal.css.UniversalSpringbootProject.common.filter.Slf4jLogFilter">
+        </filter>
+    </appender>
+
     <!-- 只有该级别日志及以上级别日志才会输出到指定渠道 -->
     <!-- 测试：debug。上生产环境时，需要改成info或error -->
     <root level="info">
@@ -158,5 +173,8 @@
         <appender-ref ref="ERROR"/>
         <appender-ref ref="WARN"/>
         <appender-ref ref="INFO"/>
+
+        <!--DB输出-->
+        <appender-ref ref="DB"/>
     </root>
 </configuration>

@@ -3,6 +3,10 @@ server:
 
 spring:
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/universal_project?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
     dynamic:
       primary: universal_project
       datasource:
@@ -26,3 +30,8 @@ cors:
 
 myConfig:
   swagger-ui-open: true
+
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
