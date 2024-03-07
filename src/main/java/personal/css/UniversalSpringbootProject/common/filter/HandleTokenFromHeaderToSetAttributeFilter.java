@@ -109,7 +109,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         newTokens = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
                     } catch (NoPermissionException | TokenExpiredException | JWTDecodeException ex) {
                         log.error(ex.getMessage());
-                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + e.getMessage() + "\",\"result\":null}");
+                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + ex.getMessage() + "\",\"result\":null}");
                         return;
                     } catch (IllegalArgumentException ex) {
                         log.error(ex.getMessage());

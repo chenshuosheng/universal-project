@@ -27,11 +27,16 @@ cors:
   allowedMethods: '*'                      #允许的 HTTP 方法
   maxAge: 3600                             #预检请求的有效期
 
-
 myConfig:
   swagger-ui-open: true
-
 
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+thread:
+  corePoolSize: 8           #核心线程数
+  maximumPoolSize: 16       #最大线程数
+  keepAliveTime: 1          #非核心线程的闲置存活时间
+  queueLength: 50           #队列长度
+  unit: MINUTES             #存活时间单位
