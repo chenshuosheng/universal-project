@@ -36,7 +36,7 @@ public class CookieUtil {
      * @param cookieName
      * @return
      */
-    public static String getValueFromCookies(HttpServletRequest httpServletRequest, String cookieName) throws Exception {
+    public static String getValueFromCookies(HttpServletRequest httpServletRequest, String cookieName) throws RuntimeException {
         try {
             Cookie[] cookies = httpServletRequest.getCookies();
             if(null == cookies)
@@ -48,10 +48,10 @@ public class CookieUtil {
                     return cookie.getValue();
                 }
             }
-            return null;
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            ExceptionUtil.recordLogAndThrowException(RuntimeException.class, e.getMessage(), "未解析到有效值！");
         }
+        return null;
     }
 
 

@@ -127,10 +127,12 @@ public class TokenUtil {
             return verify.getClaims();
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        } catch (TokenExpiredException e){
+        } catch (TokenExpiredException e) {
             throw new TokenExpiredException(e.getMessage());
-        }catch (JWTDecodeException e) {
+        } catch (JWTDecodeException e) {
             throw new JWTDecodeException(e.getMessage());
+        } catch (RuntimeException e){
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

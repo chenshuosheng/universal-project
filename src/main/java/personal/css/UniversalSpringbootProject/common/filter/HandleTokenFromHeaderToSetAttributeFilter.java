@@ -6,8 +6,9 @@ import com.auth0.jwt.interfaces.Claim;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import personal.css.UniversalSpringbootProject.common.NoPermissionException;
+import personal.css.UniversalSpringbootProject.common.exceptions.NoPermissionException;
 import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
+import personal.css.UniversalSpringbootProject.common.utils.ExceptionUtil;
 import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
 import personal.css.UniversalSpringbootProject.common.utils.code.Base64Util;
 import personal.css.UniversalSpringbootProject.module.loginManage.dto.IdentityDto;
@@ -34,7 +35,8 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
         urlPatterns = {
                 "/account/*",
                 "/user/*",
-                "/loginManage/*"
+                "/loginManage/*",
+                "/apiLog/*"
         },                //匹配请求路径
         filterName = "HandleTokenFromHeaderToSetAttributeFilter" //默认为类名
 )
@@ -58,7 +60,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
             try {
                 accessToken = Base64Util.decodeWithBase64(accessToken);
             } catch (RuntimeException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
                 writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
                 return;
             }
@@ -69,22 +71,18 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
             //根据jwt提取用户信息存入内存供本次请求使用
             try {
                 setAttributes(jwt, httpServletRequest);
-            } catch (NoPermissionException e) {
-                e.printStackTrace();
+            } catch (NoPermissionException | JWTDecodeException e) {
+                log.error(e.getMessage());
                 writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
                 return;
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
-                return;
             } catch (TokenExpiredException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
                 //身份令牌过期，从cookie中获取刷新令牌
                 String refreshToken = null;
                 try {
                     refreshToken = CookieUtil.getValueFromCookies(httpServletRequest, Refresh_TOKEN);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    log.error(ex.getMessage());
                     writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
                     return;
                 }
@@ -95,7 +93,9 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                     try {
                         refreshToken = Base64Util.decodeWithBase64(refreshToken);
                     } catch (RuntimeException ex) {
-                        ex.printStackTrace();
+                        log.error(ex.getMessage());
+                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                        return;
                     }
 
                     //去掉"Bearer "
@@ -109,21 +109,13 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         IdentityDto identityDto = setAttributes(jwt, httpServletRequest);
                         //重新构造有效载荷，受困于类型不同，无法直接使用payLoad
                         newTokens = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
-                    } catch (NoPermissionException ex) {
-                        ex.printStackTrace();
+                    } catch (NoPermissionException | TokenExpiredException | JWTDecodeException ex) {
+                        log.error(ex.getMessage());
                         writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
                         return;
-                    } catch (IllegalArgumentException | IOException ex) {
-                        ex.printStackTrace();
+                    } catch (IllegalArgumentException ex) {
+                        log.error(ex.getMessage());
                         writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
-                        return;
-                    } catch (TokenExpiredException ex) {
-                        ex.printStackTrace();
-                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
-                        return;
-                    } catch (JWTDecodeException ex) {
-                        ex.printStackTrace();
-                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
                         return;
                     }
 
@@ -132,17 +124,14 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                     CookieUtil.setCookie(httpServletResponse, Refresh_TOKEN, newTokens.getRefreshToken());
 
                 } else {
-                    writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌过期！请重新登录\",\"result\":null}");
+                    log.error("未获取到刷新令牌，无法重新生成jwt！");
+                    writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌已过期！请重新登录！\",\"result\":null}");
                     return;
                 }
-            } catch (JWTDecodeException e) {
-                e.printStackTrace();
-                writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"令牌有误！身份信息异常！\",\"result\":null}");
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
                 writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
-                return; // 直接返回，不再向下传递请求
+                return;
             }
         }
 
@@ -150,8 +139,6 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
         //如果注释掉下面的代码，客户端将收不到响应
         chain.doFilter(request, response);
     }
-
-
 
 
     private void writeResponse(HttpServletResponse httpServletResponse, int status, String contentType, String message) throws IOException {
@@ -171,9 +158,8 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
      * @throws IllegalArgumentException
      * @throws TokenExpiredException
      * @throws JWTDecodeException
-     * @throws IOException
      */
-    private IdentityDto setAttributes(String jwt, HttpServletRequest httpServletRequest) throws NoPermissionException, IllegalArgumentException, TokenExpiredException, JWTDecodeException, IOException {
+    private IdentityDto setAttributes(String jwt, HttpServletRequest httpServletRequest) throws NoPermissionException, IllegalArgumentException, TokenExpiredException, JWTDecodeException {
         try {
             String tenantId = httpServletRequest.getHeader(ABP_TENANT_ID);
             String requestURI = httpServletRequest.getRequestURI();
@@ -183,7 +169,8 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
             //获取userId
             Long userId = payLoad.get("id").asLong();
 
-            if (requestURI.startsWith("/account") && 1L != userId) {
+            //超级管理员才有权访问这两个路径下的接口
+            if ((requestURI.startsWith("/account") || requestURI.startsWith("/apiLog")) && SUPER_ADMIN_ID != userId) {
                 throw new NoPermissionException();
             }
 
@@ -205,12 +192,17 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
 
             return new IdentityDto(userId, name);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
+            ExceptionUtil.recordLogAndThrowException(IllegalArgumentException.class, e.getMessage(), "参数异常！");
         } catch (TokenExpiredException e) {
-            throw new TokenExpiredException(e.getMessage());
+            ExceptionUtil.recordLogAndThrowException(TokenExpiredException.class, e.getMessage(), "令牌过期！");
         } catch (JWTDecodeException e) {
-            throw new JWTDecodeException(e.getMessage());
+            ExceptionUtil.recordLogAndThrowException(JWTDecodeException.class, e.getMessage(), "身份异常！");
+        } catch (NoPermissionException e) {
+            ExceptionUtil.recordLogAndThrowException(NoPermissionException.class, e.getMessage(), "很抱歉，您无权限访问此资源！");
+        } catch (RuntimeException e) {
+            ExceptionUtil.recordLogAndThrowException(RuntimeException.class, e.getMessage(), "服务器异常！");
         }
+        return null;
     }
 }
 

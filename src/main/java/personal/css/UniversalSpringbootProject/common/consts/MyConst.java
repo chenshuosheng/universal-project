@@ -22,10 +22,15 @@ public interface MyConst {
     public static final String ACCOUNT = "account";
 
 
-    //密钥
+    //jwt密钥
     public static final String SECRET = "universalSpringbootProject";
 
+    //管理员id
+    public static final Long SUPER_ADMIN_ID = 1L;
 
+
+
+    /*-----------------------------数据库相关------------------------------*/
     //msql驱动
     public static final String DRIVER_CLASSNAME = "com.mysql.cj.jdbc.Driver";
 

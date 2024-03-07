@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import personal.css.UniversalSpringbootProject.common.utils.ExceptionUtil;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
 import personal.css.UniversalSpringbootProject.module.account.mapper.AccountMapper;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
@@ -45,7 +46,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public User registerAndSaveInfo(Account account, User user) throws DuplicateKeyException{
+    public User registerAndSaveInfo(Account account, User user) throws DuplicateKeyException {
         try {
             account = accountService.insert(null, account);
             if (null != account) {
@@ -53,20 +54,17 @@ public class LoginServiceImpl implements LoginService {
                 if (null != user) {
                     return user;
                 } else {
-                    log.error("新增用户信息失败！");
-                    throw new RuntimeException("注册账户失败！");
+                    ExceptionUtil.recordLogAndThrowException(RuntimeException.class, "新增用户信息失败！", "注册账户失败！");
                 }
             } else {
-                log.error("注册账户失败！");
-                throw new RuntimeException("注册账户失败！");
+                ExceptionUtil.recordLogAndThrowException(RuntimeException.class, "新增账户信息失败！", "注册账户失败！");
             }
-        } catch (DuplicateKeyException e){
-            e.printStackTrace();
-            throw new DuplicateKeyException(e.getMessage()+"注册账户失败！");
-        } catch(RuntimeException e) {
-            e.printStackTrace();
-            throw new RuntimeException("注册账户失败！");
+        } catch (DuplicateKeyException e) {
+            ExceptionUtil.recordLogAndThrowException(DuplicateKeyException.class, e.getMessage(), "注册账户失败！");
+        } catch (RuntimeException e) {
+            ExceptionUtil.recordLogAndThrowException(RuntimeException.class, e.getMessage(), "注册账户失败！");
         }
+        return null;
     }
 
 
@@ -96,17 +94,15 @@ public class LoginServiceImpl implements LoginService {
                 if (deleteUser.getSuccessCount() == 1)
                     return true;
                 else {
-                    log.error("删除用户失败！");
-                    throw new RuntimeException("注销账户失败！");
+                    ExceptionUtil.recordLogAndThrowException(RuntimeException.class, "删除用户失败！", "注销账户失败！");
                 }
             } else {
-                log.error("删除账户失败！");
-                throw new RuntimeException("注销账户失败！");
+                ExceptionUtil.recordLogAndThrowException(RuntimeException.class, "删除账户失败！", "注销账户失败！");
             }
         } catch (RuntimeException e) {
-            e.printStackTrace();
-            throw new RuntimeException("注销账户失败！");
+            ExceptionUtil.recordLogAndThrowException(RuntimeException.class, e.getMessage(), "注销账户失败！");
         }
+        return null;
     }
 
     @Override

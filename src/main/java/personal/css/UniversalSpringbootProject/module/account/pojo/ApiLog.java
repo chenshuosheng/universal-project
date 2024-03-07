@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.pojo;
+package personal.css.UniversalSpringbootProject.module.account.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -11,14 +11,14 @@ import lombok.experimental.Accessors;
 import java.util.Date;
 
 /**
- * @Description: TODO
+ * @Description: 请求日志记录实体类
  * @Author: CSS
  * @Date: 2024/3/6 17:11
  */
 @Accessors(chain = true)
 @Data
-@TableName(value = "project_log")
-public class ProjectLog {
+@TableName(value = "api_log")
+public class ApiLog {
 
     @TableId(value = "id",type = IdType.AUTO)
     @ApiModelProperty(value = "序号")
@@ -32,21 +32,25 @@ public class ProjectLog {
     @ApiModelProperty(value = "账号（用户名）")
     private String username;//通过token获取
 
-    @TableField(value = "status_code")
-    @ApiModelProperty(value = "状态码")
-    private Integer statusCode;
-
-    @TableField(value = "method")
-    @ApiModelProperty(value = "请求方法")
-    private String method;
-
     @TableField(value = "request_url")
     @ApiModelProperty(value = "请求URL")
     private String requestUrl;
 
+    @TableField(value = "method_type")
+    @ApiModelProperty(value = "请求方法类型")
+    private String methodType;
+
+    @TableField(value = "method")
+    @ApiModelProperty(value = "处理请求的方法")
+    private String method;
+
     @TableField(value = "request_data")
     @ApiModelProperty(value = "请求数据")
     private String requestData;
+
+    @TableField(value = "status_code")
+    @ApiModelProperty(value = "响应状态码")
+    private Integer statusCode;
 
     @TableField(value = "response_data")
     @ApiModelProperty(value = "响应数据")

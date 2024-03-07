@@ -4,7 +4,7 @@ import personal.css.UniversalSpringbootProject.common.service.MyBaseService;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 
 /**
- * @Description: 账户业务处理接口
+ * @Description: 账户数据管理业务处理接口
  * @Author: CSS
  * @Date: 2024/2/29 10:23
  */

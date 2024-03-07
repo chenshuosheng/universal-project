@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 
 /**
- * @Description: 账户持久层
+ * @Description: 账户数据管理持久层
  * @Author: CSS
  * @Date: 2024/2/29 10:28
  */

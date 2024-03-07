@@ -8,7 +8,7 @@ import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.account.service.AccountService;
 
 /**
- * @Description: 账户业务处理实现类
+ * @Description: 账户数据管理业务处理实现类
  * @Author: CSS
  * @Date: 2024/2/29 10:24
  */

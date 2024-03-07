@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common;
+package personal.css.UniversalSpringbootProject.common.exceptions;
 
 /**
  * @Description: 自定义无权限异常类
@@ -7,7 +7,7 @@ package personal.css.UniversalSpringbootProject.common;
  */
 public class NoPermissionException extends RuntimeException{
     public NoPermissionException() {
-        super("无权限访问此资源");
+        super("该用户无访问该资源的权限！");
     }
 
     public NoPermissionException(String message) {
