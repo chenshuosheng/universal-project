@@ -5,8 +5,8 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import cn.hutool.extra.spring.SpringUtil;
 import org.springframework.context.annotation.Configuration;
-import personal.css.UniversalSpringbootProject.common.pojo.Slf4jLogging;
-import personal.css.UniversalSpringbootProject.common.service.Slf4jLoggingService;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Slf4jLogging;
+import personal.css.UniversalSpringbootProject.module.admin.service.Slf4jLoggingService;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.pojo;
+package personal.css.UniversalSpringbootProject.module.admin.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,7 +10,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * @Description: TODO
+ * @Description: Slf4j日志
  * @Author: CSS
  * @Date: 2024/3/6 14:56
  */
