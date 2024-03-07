@@ -1,11 +1,11 @@
-package personal.css.UniversalSpringbootProject.module.user.service.impl;
+package personal.css.UniversalSpringbootProject.module.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import personal.css.UniversalSpringbootProject.common.service.impl.MyBaseServiceImpl;
-import personal.css.UniversalSpringbootProject.module.user.mapper.UserMapper;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
-import personal.css.UniversalSpringbootProject.module.user.service.UserService;
+import personal.css.UniversalSpringbootProject.module.admin.mapper.UserMapper;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.service.UserService;
 
 /**
  * @Description: 用户信息业务处理实现类

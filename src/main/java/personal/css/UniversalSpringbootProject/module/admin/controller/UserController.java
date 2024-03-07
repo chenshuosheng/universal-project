@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.user.controller;
+package personal.css.UniversalSpringbootProject.module.admin.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import personal.css.UniversalSpringbootProject.common.controller.MyBaseController;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
-import personal.css.UniversalSpringbootProject.module.user.service.UserService;
-import personal.css.UniversalSpringbootProject.module.user.vo.UserInfo;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.service.UserService;
+import personal.css.UniversalSpringbootProject.module.admin.vo.UserInfo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,9 +25,9 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ACCO
  * @Date: 2024/2/29 10:22
  */
 
-@Api(tags = "用户")
+@Api(tags = "用户(超级管理员可见，除个人信息接口)")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/admin/user")
 public class UserController extends MyBaseController<UserService, User> {
 
     @Autowired

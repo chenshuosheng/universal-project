@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import personal.css.UniversalSpringbootProject.common.utils.ExceptionUtil;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
-import personal.css.UniversalSpringbootProject.module.account.mapper.AccountMapper;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
-import personal.css.UniversalSpringbootProject.module.account.service.AccountService;
+import personal.css.UniversalSpringbootProject.module.admin.mapper.AccountMapper;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.service.AccountService;
 import personal.css.UniversalSpringbootProject.module.loginManage.service.LoginService;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
-import personal.css.UniversalSpringbootProject.module.user.service.UserService;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.service.UserService;
 
 /**
  * @Description: 登录管理相关业务服务层实现类

@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.user.vo;
+package personal.css.UniversalSpringbootProject.module.admin.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;

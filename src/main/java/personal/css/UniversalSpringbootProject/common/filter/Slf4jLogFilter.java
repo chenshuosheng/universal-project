@@ -11,7 +11,7 @@ import personal.css.UniversalSpringbootProject.common.service.Slf4jLoggingServic
 import java.util.Date;
 
 /**
- * @Description: TODO
+ * @Description: Slf4j日志入库
  * @Author: CSS
  * @Date: 2024/3/6 14:39
  */

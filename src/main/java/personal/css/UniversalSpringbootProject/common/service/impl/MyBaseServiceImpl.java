@@ -13,8 +13,8 @@ import personal.css.UniversalSpringbootProject.common.utils.sql.ExecuteSQL;
 import personal.css.UniversalSpringbootProject.common.utils.sql.SqlValidateUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.SuccessCount;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;

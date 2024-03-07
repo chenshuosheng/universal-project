@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.account.pojo;
+package personal.css.UniversalSpringbootProject.module.admin.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

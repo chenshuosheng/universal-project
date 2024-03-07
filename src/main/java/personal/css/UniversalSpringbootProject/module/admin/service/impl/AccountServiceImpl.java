@@ -1,11 +1,11 @@
-package personal.css.UniversalSpringbootProject.module.account.service.impl;
+package personal.css.UniversalSpringbootProject.module.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import personal.css.UniversalSpringbootProject.common.service.impl.MyBaseServiceImpl;
-import personal.css.UniversalSpringbootProject.module.account.mapper.AccountMapper;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
-import personal.css.UniversalSpringbootProject.module.account.service.AccountService;
+import personal.css.UniversalSpringbootProject.module.admin.mapper.AccountMapper;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.service.AccountService;
 
 /**
  * @Description: 账户数据管理业务处理实现类

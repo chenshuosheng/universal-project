@@ -1,8 +1,8 @@
-package personal.css.UniversalSpringbootProject.module.log.service;
+package personal.css.UniversalSpringbootProject.module.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
-import personal.css.UniversalSpringbootProject.module.account.pojo.ApiLog;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.ApiLog;
 
 /**
  * @Description: 接口日志管理业务处理接口

@@ -1,8 +1,8 @@
-package personal.css.UniversalSpringbootProject.module.user.mapper;
+package personal.css.UniversalSpringbootProject.module.admin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
 
 /**
  * @Description: 用户信息持久层

@@ -1,7 +1,7 @@
 package personal.css.UniversalSpringbootProject.module.loginManage.service;
 
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
 
 /**
  * @Description: 登录管理相关业务服务层接口

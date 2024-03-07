@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.log.service.impl;
+package personal.css.UniversalSpringbootProject.module.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
-import personal.css.UniversalSpringbootProject.module.account.pojo.ApiLog;
-import personal.css.UniversalSpringbootProject.module.log.mapper.ApiLogMapper;
-import personal.css.UniversalSpringbootProject.module.log.service.ApiLogService;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.ApiLog;
+import personal.css.UniversalSpringbootProject.module.admin.mapper.ApiLogMapper;
+import personal.css.UniversalSpringbootProject.module.admin.service.ApiLogService;
 
 import java.util.List;
 

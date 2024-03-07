@@ -1,8 +1,8 @@
-package personal.css.UniversalSpringbootProject.module.account.mapper;
+package personal.css.UniversalSpringbootProject.module.admin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
 
 /**
  * @Description: 账户数据管理持久层

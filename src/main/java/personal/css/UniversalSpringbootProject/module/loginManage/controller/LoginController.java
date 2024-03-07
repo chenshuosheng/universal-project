@@ -13,12 +13,12 @@ import personal.css.UniversalSpringbootProject.common.utils.CookieUtil;
 import personal.css.UniversalSpringbootProject.common.utils.Md5Util;
 import personal.css.UniversalSpringbootProject.common.utils.TokenUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
 import personal.css.UniversalSpringbootProject.module.loginManage.service.LoginService;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.RegisterVo;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.TokenVo;
 import personal.css.UniversalSpringbootProject.module.loginManage.vo.UpdatePasswordVo;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
 
 import javax.servlet.http.HttpServletResponse;
 

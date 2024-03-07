@@ -33,10 +33,8 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.*;
 
 @WebFilter(
         urlPatterns = {
-                "/account/*",
-                "/user/*",
                 "/loginManage/*",
-                "/apiLog/*"
+                "/admin/*"
         },                //匹配请求路径
         filterName = "HandleTokenFromHeaderToSetAttributeFilter" //默认为类名
 )
@@ -61,7 +59,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 accessToken = Base64Util.decodeWithBase64(accessToken);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
-                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + e.getMessage() + "\",\"result\":null}");
                 return;
             }
 
@@ -73,7 +71,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 setAttributes(jwt, httpServletRequest);
             } catch (NoPermissionException | JWTDecodeException e) {
                 log.error(e.getMessage());
-                writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + e.getMessage() + "\",\"result\":null}");
                 return;
             } catch (TokenExpiredException e) {
                 log.error(e.getMessage());
@@ -83,7 +81,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                     refreshToken = CookieUtil.getValueFromCookies(httpServletRequest, Refresh_TOKEN);
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
-                    writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                    writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + ex.getMessage() + "\",\"result\":null}");
                     return;
                 }
 
@@ -94,7 +92,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         refreshToken = Base64Util.decodeWithBase64(refreshToken);
                     } catch (RuntimeException ex) {
                         log.error(ex.getMessage());
-                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + ex.getMessage() + "\",\"result\":null}");
                         return;
                     }
 
@@ -111,11 +109,11 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                         newTokens = TokenUtil.getTokenVo(identityDto.getUserId(), identityDto.getName());
                     } catch (NoPermissionException | TokenExpiredException | JWTDecodeException ex) {
                         log.error(ex.getMessage());
-                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                        writeResponse(httpServletResponse, HttpStatus.UNAUTHORIZED.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + e.getMessage() + "\",\"result\":null}");
                         return;
                     } catch (IllegalArgumentException ex) {
                         log.error(ex.getMessage());
-                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + ex.getMessage() + ",\"result\":null}");
+                        writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + ex.getMessage() + "\",\"result\":null}");
                         return;
                     }
 
@@ -130,7 +128,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
                 }
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
-                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":" + e.getMessage() + ",\"result\":null}");
+                writeResponse(httpServletResponse, HttpStatus.INTERNAL_SERVER_ERROR.value(), "application/json;charset=UTF-8", "{\"success\":false,\"error\":\"" + e.getMessage() + "\",\"result\":null}");
                 return;
             }
         }
@@ -170,7 +168,7 @@ public class HandleTokenFromHeaderToSetAttributeFilter implements Filter {
             Long userId = payLoad.get("id").asLong();
 
             //超级管理员才有权访问这两个路径下的接口
-            if ((requestURI.startsWith("/account") || requestURI.startsWith("/apiLog")) && SUPER_ADMIN_ID != userId) {
+            if (requestURI.startsWith("/admin") && !requestURI.startsWith("/admin/user/getUserInfo") && SUPER_ADMIN_ID != userId) {
                 throw new NoPermissionException();
             }
 

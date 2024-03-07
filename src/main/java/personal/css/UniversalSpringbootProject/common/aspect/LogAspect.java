@@ -9,14 +9,13 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import personal.css.UniversalSpringbootProject.common.dto.ResultDto;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
-import personal.css.UniversalSpringbootProject.module.account.pojo.ApiLog;
-import personal.css.UniversalSpringbootProject.module.log.service.ApiLogService;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.ApiLog;
+import personal.css.UniversalSpringbootProject.module.admin.service.ApiLogService;
 import personal.css.UniversalSpringbootProject.module.loginManage.dto.IdentityDto;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +33,7 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ACCO
 import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER_ID;
 
 /**
- * @Description: TODO
+ * @Description: 请求接口日志切面
  * @Author: CSS
  * @Date: 2024/3/6 16:36
  */
@@ -88,14 +87,26 @@ public class LogAspect {
         httpServletRequest.setAttribute("methodName",methodName);
 
         //获取参数名称
-        LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
-        Method[] methods = point.getTarget().getClass().getDeclaredMethods();
+        Class<?> sonClazz = point.getTarget().getClass();
+        Method[] methods = sonClazz.getDeclaredMethods();
         Method method = null;
         for (int i = 0; i < methods.length; i++) {
             String name = methods[i].getName();
             if(signature.getName().equals(name)){
                 method = methods[i];
                 break;
+            }
+        }
+        //方法可能继承自super类
+        if(method == null){
+            Class<?> superclass = sonClazz.getSuperclass();
+            Method[] declaredMethods = superclass.getDeclaredMethods();
+            for (int i = 0; i < declaredMethods.length; i++) {
+                String name = declaredMethods[i].getName();
+                if(signature.getName().equals(name)){
+                    method = declaredMethods[i];
+                    break;
+                }
             }
         }
         Parameter[] parameters = method.getParameters();
@@ -141,7 +152,7 @@ public class LogAspect {
             //异步入库
             CompletableFuture<Void> async = CompletableFuture.supplyAsync(() -> {
                 //构造日志对象
-                ApiLog apiLog = setProjectLog(took, identityDto, requestUrl, methodType, methodName, requestParameters, resultDto);
+                ApiLog apiLog = setApiLog(took, identityDto, requestUrl, methodType, methodName, requestParameters, resultDto);
                 //日志数据入库
                 apiLogService.insert(apiLog);
                 return null;
@@ -188,7 +199,7 @@ public class LogAspect {
             //异步入库
             CompletableFuture<Void> async = CompletableFuture.supplyAsync(() -> {
                 //构造日志对象
-                ApiLog apiLog = setProjectLog(took, identityDto, requestUrl, methodType, methodName, requestParameters, resultDto);
+                ApiLog apiLog = setApiLog(took, identityDto, requestUrl, methodType, methodName, requestParameters, resultDto);
                 //日志数据入库
                 apiLogService.insert(apiLog);
                 return null;
@@ -200,7 +211,20 @@ public class LogAspect {
         return null;
     }
 
-    private ApiLog setProjectLog(double took, IdentityDto identityDto, String requestUrl, String methodType, String methodName, String args, ResultDto resultDto) {
+
+    /**
+     * 构造日志对象
+     *
+     * @param took
+     * @param identityDto
+     * @param requestUrl
+     * @param methodType
+     * @param methodName
+     * @param args
+     * @param resultDto
+     * @return
+     */
+    private ApiLog setApiLog(double took, IdentityDto identityDto, String requestUrl, String methodType, String methodName, String args, ResultDto resultDto) {
         ApiLog apiLog = new ApiLog();
         apiLog.setUserId(identityDto.getUserId())
                 .setUsername(identityDto.getName())
@@ -216,6 +240,12 @@ public class LogAspect {
         return apiLog;
     }
 
+
+    /**
+     * 从请求对象中获取用户身份信息
+     *
+     * @return
+     */
     private IdentityDto getIdentityDto() {
         Object attribute1 = httpServletRequest.getAttribute(USER_ID);
         Object attribute2 = httpServletRequest.getAttribute(ACCOUNT);

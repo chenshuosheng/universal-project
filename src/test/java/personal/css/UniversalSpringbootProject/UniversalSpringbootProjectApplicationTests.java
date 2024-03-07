@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import personal.css.UniversalSpringbootProject.module.user.mapper.UserMapper;
-import personal.css.UniversalSpringbootProject.module.user.pojo.User;
+import personal.css.UniversalSpringbootProject.module.admin.mapper.UserMapper;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.User;
 
 import java.util.Date;
 import java.util.HashMap;

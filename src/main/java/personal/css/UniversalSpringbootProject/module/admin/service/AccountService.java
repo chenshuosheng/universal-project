@@ -1,7 +1,7 @@
-package personal.css.UniversalSpringbootProject.module.account.service;
+package personal.css.UniversalSpringbootProject.module.admin.service;
 
 import personal.css.UniversalSpringbootProject.common.service.MyBaseService;
-import personal.css.UniversalSpringbootProject.module.account.pojo.Account;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.Account;
 
 /**
  * @Description: 账户数据管理业务处理接口

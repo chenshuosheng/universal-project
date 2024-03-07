@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.log.controller;
+package personal.css.UniversalSpringbootProject.module.admin.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
-import personal.css.UniversalSpringbootProject.module.account.pojo.ApiLog;
-import personal.css.UniversalSpringbootProject.module.log.service.ApiLogService;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.ApiLog;
+import personal.css.UniversalSpringbootProject.module.admin.service.ApiLogService;
 
 /**
  * @Description: 接口日志管理控制层
@@ -23,7 +23,7 @@ import personal.css.UniversalSpringbootProject.module.log.service.ApiLogService;
 
 @Api(tags = "接口日志管理(超级管理员可见)")
 @RestController
-@RequestMapping("/apiLog")
+@RequestMapping("/admin/apiLog")
 public class ApiLogController {
 
     @Autowired

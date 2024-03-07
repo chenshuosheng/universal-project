@@ -1,8 +1,8 @@
-package personal.css.UniversalSpringbootProject.module.log.mapper;
+package personal.css.UniversalSpringbootProject.module.admin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import personal.css.UniversalSpringbootProject.module.account.pojo.ApiLog;
+import personal.css.UniversalSpringbootProject.module.admin.pojo.ApiLog;
 
 /**
  * @Description: 接口日志管理持久层
