@@ -1,7 +1,7 @@
 package personal.css.UniversalSpringbootProject.common.config;
 
 import io.swagger.annotations.Api;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -11,7 +11,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +26,20 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.ACCE
  */
 
 
-@EnableSwagger2
 @Configuration
-@ConditionalOnProperty(prefix = "myConfig", name = "swagger-ui-open", havingValue = "true")
+@EnableSwagger2WebMvc
+//要记得在配置文件配置打开，否则打开文档会啥也没有
+//@ConditionalOnProperty(prefix = "myConfig", name = "swagger-ui-open", havingValue = "true")
 public class SwaggerConfig {
+
+    @Value("${myconfig.swagger-ui-open}")
+    private Boolean enable;
 
     @Bean
     public Docket creatRestApi(){
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
+                .enable(enable)
                 .select()//必须有select扫描
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                 .paths(PathSelectors.any())

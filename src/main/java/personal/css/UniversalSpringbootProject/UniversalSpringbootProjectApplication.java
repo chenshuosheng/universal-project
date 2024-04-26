@@ -1,6 +1,5 @@
 package personal.css.UniversalSpringbootProject;
 
-import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +11,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @ServletComponentScan  //启用Servlet组件扫描，以便识别和注册过滤器
-@EnableSwaggerBootstrapUI
 @SpringBootApplication
 @Slf4j
 public class UniversalSpringbootProjectApplication {
@@ -40,9 +38,11 @@ public class UniversalSpringbootProjectApplication {
 
         log.info("\n---------------------------------------------------------------" +
                         "\n本地knif4j文档地址：\thttp://{}:{}/doc.html" +
+                        "\n本地knif4j文档地址：\thttp://{}:{}/swagger-ui.html" +
                         "\n联网knif4j文档地址：\thttp://{}:{}/doc.html" +
+                        "\n联网knif4j文档地址：\thttp://{}:{}/swagger-ui.html" +
                         "\n---------------------------------------------------------------"
-                , localhostIp, port, hostAddress, port);
+                , localhostIp, port, hostAddress, port, localhostIp, port, hostAddress, port);
     }
 
 }
