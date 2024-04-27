@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import personal.css.UniversalSpringbootProject.common.annotation.Dict;
 import personal.css.UniversalSpringbootProject.common.pojo.BaseEntity;
 
 import javax.validation.constraints.Max;
@@ -27,6 +28,8 @@ public class User extends BaseEntity {
 
     public static final Map<String, String> COLUMN_MAP = new HashMap<String, String>(){{
         put("name", "name");
+        put("countryId", "country_id");
+        put("nationId", "nation_id");
         put("age", "age");
         put("email", "email");
         putAll(BaseEntity.COLUMN_MAP);
@@ -47,4 +50,18 @@ public class User extends BaseEntity {
     @ApiModelProperty(value = "邮箱")
     @TableField(value = "email")
     private String email;
+
+    @Dict(table = "country", code = "id", displayName = "name")
+    @Min(value = 1)
+    @Max(value = 232)
+    @ApiModelProperty(value = "国家代码")
+    @TableField(value = "country_id")
+    private Short countryId;
+
+    @Dict(table = "nation", code = "id", displayName = "name")
+    @Min(value = 1)
+    @Max(value = 57)
+    @ApiModelProperty(value = "民族代码")
+    @TableField(value = "nation_id")
+    private Short nationId;
 }

@@ -1,6 +1,6 @@
 package personal.css.UniversalSpringbootProject.common.handle;
 
-import cn.hutool.json.JSONArray;
+import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.dao.DuplicateKeyException;

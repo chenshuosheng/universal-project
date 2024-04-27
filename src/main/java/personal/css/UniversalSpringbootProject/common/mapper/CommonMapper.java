@@ -23,4 +23,7 @@ public interface CommonMapper extends BaseMapper {
 
     @Select("select nation.name from universal_project.nation")
     List<String> getNations();
+
+    @Select("select ${displayName} from ${table} where ${code} = #{value}")
+    String translation(String displayName, String table, String code, Object value);
 }

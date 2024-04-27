@@ -1,6 +1,5 @@
 package personal.css.UniversalSpringbootProject.common.utils.sql;
 
-import cn.hutool.json.JSONException;
 import org.springframework.stereotype.Component;
 import personal.css.UniversalSpringbootProject.common.utils.CommonUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
@@ -240,9 +239,7 @@ public class ExecuteSQL {
             return new ListResult<>(list.size(), list);
         } catch (SQLException e) {
             throw new SQLException(e);
-        } catch (JSONException e) {
-            throw new JSONException(e);
-        } finally {
+        }  finally {
             // 关闭资源
             if (rs != null)
                 rs.close();
@@ -282,8 +279,6 @@ public class ExecuteSQL {
                 return "执行成功！";
         } catch (SQLException e) {
             throw new SQLException(e);
-        } catch (JSONException e) {
-            throw new JSONException(e);
         } finally {
             // 关闭资源
             if (rs != null)

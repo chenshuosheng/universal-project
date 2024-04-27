@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.common.aspect;
+package personal.css.UniversalSpringbootProject.module.admin.mapper.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,7 +24,7 @@ import static personal.css.UniversalSpringbootProject.common.consts.MyConst.USER
 @Aspect
 @Component
 @Slf4j
-@Order(2)
+@Order(3)
 public class CommonAspect {
 
     //使用@Slf4j

@@ -1,6 +1,6 @@
-package personal.css.UniversalSpringbootProject.common.aspect;
+package personal.css.UniversalSpringbootProject.module.admin.mapper.aspect;
 
-import cn.hutool.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
@@ -144,7 +144,7 @@ public class LogAspect {
                     .append(parameters[i])
                     .append("\":")
                     .append("\"")
-                    .append((args[i] == null && i == 0) ? identityDto.getUserId() : args[i].toString())
+                    .append((args[i] == null && i == 0) ? identityDto.getUserId() : args[i])
                     .append("\"")
             );
         }
@@ -163,7 +163,7 @@ public class LogAspect {
             errorMsg = vo.getError();
 
         try {
-            data = new JSONObject(result);
+            data = JSONObject.toJSONString(result);
         } catch (Exception e) {
             data = result;
         }
