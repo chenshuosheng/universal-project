@@ -13,15 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import personal.css.UniversalSpringbootProject.common.annotation.Dict;
 import personal.css.UniversalSpringbootProject.common.mapper.CommonMapper;
+import personal.css.UniversalSpringbootProject.common.utils.RedisUtil;
 import personal.css.UniversalSpringbootProject.common.vo.ListResult;
 import personal.css.UniversalSpringbootProject.common.vo.ResultVo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 数据字典翻译
@@ -38,6 +36,9 @@ public class DictAspect {
     @Autowired
     private CommonMapper commonMapper;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Pointcut("execution(public * personal.css.UniversalSpringbootProject..controller..*.*(..))")
     public void all() {
     }
@@ -52,12 +53,12 @@ public class DictAspect {
         Object proceed = point.proceed(args);
         try {
             ResponseEntity responseEntity = (ResponseEntity) proceed;
-            ResultVo body = (ResultVo)responseEntity.getBody();
+            ResultVo body = (ResultVo) responseEntity.getBody();
             boolean success = body.isSuccess();
-            if(success){
+            if (success) {
                 //判断是不是自定义封装集合，是则需要处理
-                if(body.getResult() instanceof ListResult){
-                    ListResult listResult = (ListResult)body.getResult();
+                if (body.getResult() instanceof ListResult) {
+                    ListResult listResult = (ListResult) body.getResult();
                     List items = listResult.getItems();
 
                     //转化后的数据
@@ -65,7 +66,7 @@ public class DictAspect {
                     List<Object> newItems = new ArrayList<>();
 
                     //集合非空才处理
-                    if(null != items && !items.isEmpty()){
+                    if (null != items && !items.isEmpty()) {
                         //获取元素类型
                         Class<?> clazz = items.get(0).getClass();
                         //获取属性数组（不包含父类属性，也不需要）
@@ -75,9 +76,9 @@ public class DictAspect {
                         Map<String, JSONObject> map = new HashMap<>();
                         for (Field field : fields) {
                             Annotation annotation = field.getAnnotation(Dict.class);
-                            if(null ==annotation)
+                            if (null == annotation)
                                 continue;
-                            else{
+                            else {
                                 Dict dict = (Dict) annotation;
                                 String table = dict.table();
                                 String code = dict.code();
@@ -103,16 +104,36 @@ public class DictAspect {
                                 String code = entryValue.getString("code");
                                 String displayName = entryValue.getString("displayName");
 
+                                StringJoiner sj = new StringJoiner("_", "", "");
+                                sj.add(table)
+                                        .add(code)
+                                        .add(displayName)
+                                        .add(value.toString());
+                                String redis_key = sj.toString();
+
                                 //先试一下一个一个查，后面再优化，统一处理
                                 //查表
                                 String translation = null;
                                 try {
-                                    translation = commonMapper.translation(displayName, table, code, value);
+                                    translation = (String) redisUtil.get(redis_key);
                                 } catch (Exception e) {
-                                    log.error("查询失败：{}",e);
+                                    log.error("redis获取值失败：{}", e);
                                 }
-                                jsonObject.put(key+"_text", translation);
-
+                                if (null == translation) {
+                                    try {
+                                        translation = commonMapper.translation(displayName, table, code, value);
+                                        if (null != translation) {
+                                            try {
+                                                redisUtil.set(redis_key, translation, 30);
+                                            } catch (Exception e) {
+                                                log.error("redis存储值失败：{}", e);
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        log.error("查询失败：{}", e);
+                                    }
+                                }
+                                jsonObject.put(key + "_text", translation);
                             }
                             Object newItem = JSONObject.parse(jsonObject.toJSONString());
                             newItems.add(newItem);
@@ -124,7 +145,7 @@ public class DictAspect {
                 }
             }
         } catch (Exception e) {
-            log.error("转化失败：{}",e);
+            log.error("转化失败：{}", e);
         }
         Signature signature = point.getSignature();
 
