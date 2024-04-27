@@ -1,4 +1,4 @@
-package personal.css.UniversalSpringbootProject.module.admin.mapper.aspect;
+package personal.css.UniversalSpringbootProject.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.exceptions.JWTDecodeException;
